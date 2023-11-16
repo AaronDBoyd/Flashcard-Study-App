@@ -17,8 +17,7 @@ const categorySchema = new Schema({
         default: false
     },
     color: {
-        type: String,
-        default: "black"
+        type: String
     }
 }, { timestamps: true })
 
