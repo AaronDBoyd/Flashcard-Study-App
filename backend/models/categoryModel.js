@@ -7,16 +7,19 @@ const categorySchema = new Schema({
         type: String,
         required: true
     },
-    created_by: {
-        type: String,
-        required: true
-    },
     private: {
         type: Boolean,
         required: true,
         default: false
     },
     color: {
+        type: String
+    },
+    created_by_id: {
+        type: String,
+        required: true
+    },
+    created_by_email: {
         type: String
     }
 }, { timestamps: true })

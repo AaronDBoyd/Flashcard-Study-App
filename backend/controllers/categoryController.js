@@ -1,5 +1,6 @@
 const Category = require('../models/categoryModel')
 const Card = require('../models/cardModel')
+const User = require('../models/userModel')
 const mongoose = require('mongoose')
 const Log = require('../../helpers/logHelper')
 
@@ -49,7 +50,7 @@ const getCategoriesByUser = async (req, res) => {
 const createCategory = async (req, res) => {
     //const { title, created_by, private, color } = req.body
     const { title, private, color } = req.body
-    const created_by = req.user._id
+    const created_by_id = req.user._id
 
     let emptyFields = []
 
@@ -75,10 +76,13 @@ const createCategory = async (req, res) => {
         return res.status(400).json({error: 'Category already exists'})
     }
 
+    const created_by = await User.findById({ _id: created_by_id })
+    const created_by_email = created_by.email
+
     // add doc to db
     try{
         //const user_id = req.user._id
-        const category = await Category.create({title, created_by, private, color})
+        const category = await Category.create({title, private, color, created_by_id, created_by_email})
         res.status(200).json(category)
     } catch (error) {
         res.status(400).json({error: error.message})
