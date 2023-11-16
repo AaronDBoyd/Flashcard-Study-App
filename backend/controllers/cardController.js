@@ -97,9 +97,9 @@ const createCard = async (req, res) => {
         return res.status(400).json({ error: 'Please fill in all the fields', emptyFields})
     }
     
+    // increment card count of category
     const category = await Category.findById({_id: category_id})
     const cardCount = category.card_count + 1
-
     const updatedCategory = await Category.findByIdAndUpdate({_id: category_id}, {
         card_count: cardCount
     })
@@ -146,7 +146,14 @@ const deleteCard = async (req, res) => {
         return res.status(404).json({error: 'No such card'})
     }
 
-    res.status(200).json(card)
+    // decrement card count of category
+    const category = await Category.findById({_id: card.category_id})
+    const cardCount = category.card_count - 1
+    const updatedCategory = await Category.findByIdAndUpdate({_id: category._id}, {
+        card_count: cardCount
+    })
+
+    res.status(200).json({card: card, categoryCardCount: cardCount})
 }
 
 

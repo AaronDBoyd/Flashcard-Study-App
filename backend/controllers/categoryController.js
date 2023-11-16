@@ -76,6 +76,7 @@ const createCategory = async (req, res) => {
         return res.status(400).json({error: 'Category already exists'})
     }
 
+    // find and add creator email to category
     const created_by = await User.findById({ _id: created_by_id })
     const created_by_email = created_by.email
 
