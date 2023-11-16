@@ -21,7 +21,7 @@ const cardSchema = new Schema({
     },
     multiple_choice: {
         type: Boolean,
-        required: true,
+        //required: true, // will this work if not entered?
         default: false
     },
     tags: {

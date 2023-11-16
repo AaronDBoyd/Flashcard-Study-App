@@ -1,4 +1,5 @@
 const Category = require('../models/categoryModel')
+const Card = require('../models/cardModel')
 const mongoose = require('mongoose')
 const Log = require('../../helpers/logHelper')
 
@@ -68,6 +69,12 @@ const createCategory = async (req, res) => {
         return res.status(400).json({error: 'Please fill out required fields', emptyFields})
     }
 
+    // check if category already exists
+    const exists = await Category.findOne({ title })
+    if (exists && exists.title.toLowerCase() == title.toLowerCase()) {
+        return res.status(400).json({error: 'Category already exists'})
+    }
+
     // add doc to db
     try{
         //const user_id = req.user._id
@@ -91,7 +98,11 @@ const deleteCategory = async (req, res) => {
         return res.status(404).json({error: 'No such category'})
     }
 
-    res.status(200).json(category)
+    // delete all cards that belong to the category
+    const cards = await Card.deleteMany({category_id: id})
+    console.log(cards)
+
+    res.status(200).json({category: category, cardsDeleted: cards})
 }
 
 // update a category
