@@ -21,6 +21,10 @@ const categorySchema = new Schema({
     },
     created_by_email: {
         type: String
+    },
+    card_count: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true })
 

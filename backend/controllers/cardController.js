@@ -1,4 +1,5 @@
 const Card = require('../models/cardModel')
+const Category = require('../models/categoryModel')
 const mongoose = require('mongoose')
 const Log = require('../../helpers/logHelper')
 
@@ -95,12 +96,19 @@ const createCard = async (req, res) => {
     if(emptyFields.length > 0) {
         return res.status(400).json({ error: 'Please fill in all the fields', emptyFields})
     }
+    
+    const category = await Category.findById({_id: category_id})
+    const cardCount = category.card_count + 1
+
+    const updatedCategory = await Category.findByIdAndUpdate({_id: category_id}, {
+        card_count: cardCount
+    })
 
     // add doc to db
     try{
         const created_by = req.user._id
         const card = await Card.create({question, answer, category_id, multiple_choice, tags, created_by})
-        res.status(400).json(card)
+        res.status(400).json({card: card, categoryCardCount: cardCount})
     } catch (error) {
         res.status(400).json({error: error.message})
     }
