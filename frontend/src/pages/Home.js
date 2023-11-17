@@ -3,6 +3,7 @@ import { API_BASE_URL } from "../config/serverApiConfig";
 
 // components
 import CategoryDetails from "../components/CategoryDetails";
+import CategoryForm from '../components/CategoryForm'
 
 // possibly change to Categories
 const Home = () => {
@@ -32,6 +33,7 @@ const Home = () => {
               <CategoryDetails category={category} key={category._id} />
             ))}
         </div>
+        <CategoryForm />
       </div>
     </div>
   );

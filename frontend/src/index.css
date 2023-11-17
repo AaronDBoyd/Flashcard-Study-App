@@ -38,12 +38,17 @@ header a {
   grid-template-columns: 3fr 1fr;
   gap: 100px;
 }
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+}
 .category-details {
   background: #fff;
+  width: 200px;
   border-radius: 4px;
-  margin: 20px auto;
+  margin: 20px;
   padding: 20px;
-  position: relative;
+  /* position: static; */
   box-shadow: 2px 2px 5px rgba(0,0,0,0.05)
 }
 .category-details h4 {
@@ -65,5 +70,4 @@ header a {
   padding: 6px;
   border-radius: 50%;
   color: #333;
-
 }
