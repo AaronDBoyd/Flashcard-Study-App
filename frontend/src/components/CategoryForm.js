@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
+import { useCategoryContext } from '../hooks/useCategoryContext';
 import { API_BASE_URL } from "../config/serverApiConfig";
 
+
 const CategoryForm = () => {
+  const { dispatch } = useCategoryContext()
   const { user } = useAuthContext();
 
   const [title, setTitle] = useState("");
@@ -42,7 +45,7 @@ const CategoryForm = () => {
         setError(null)
         setEmptyFields([])
         console.log('new category added', json)
-        // dispatch({type: 'CREATE_CATEGORY', payload: json})
+        dispatch({type: 'CREATE_CATEGORY', payload: json})
     }
   };
 

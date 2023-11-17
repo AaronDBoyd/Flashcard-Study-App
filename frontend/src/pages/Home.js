@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../config/serverApiConfig";
+import { useCategoryContext } from "../hooks/useCategoryContext";
 
 // components
 import CategoryDetails from "../components/CategoryDetails";
@@ -7,7 +8,7 @@ import CategoryForm from '../components/CategoryForm'
 
 // possibly change to Categories
 const Home = () => {
-  const [categories, setCategories] = useState(null);
+  const {categories, dispatch} = useCategoryContext()
 
   useEffect(() => {
     const fetchCatgories = async () => {
@@ -15,7 +16,7 @@ const Home = () => {
       const json = await response.json();
 
       if (response.ok) {
-        setCategories(json);
+        dispatch({type: 'SET_CATEGORIES', payload: json})
       }
     };
 
@@ -26,7 +27,6 @@ const Home = () => {
     <div>
         <h2>Categories</h2>
       <div className="home">
-        {/* <h2>Categories</h2> */}
         <div className="categories">
           {categories &&
             categories.map((category) => (
