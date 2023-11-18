@@ -90,9 +90,9 @@ const createCard = async (req, res) => {
     // if(!multiple_choice) {
     //     emptyFields.push('multiple_choice')
     // }
-    if(!tags) {
-        emptyFields.push('tags')
-    }
+    // if(!tags) {
+    //     emptyFields.push('tags')
+    // }
     if(emptyFields.length > 0) {
         return res.status(400).json({ error: 'Please fill in all the fields', emptyFields})
     }
@@ -108,7 +108,7 @@ const createCard = async (req, res) => {
     try{
         const created_by = req.user._id
         const card = await Card.create({question, answer, category_id, multiple_choice, tags, created_by})
-        res.status(400).json({card: card, categoryCardCount: cardCount})
+        res.status(200).json({card: card, categoryCardCount: cardCount})
     } catch (error) {
         res.status(400).json({error: error.message})
     }

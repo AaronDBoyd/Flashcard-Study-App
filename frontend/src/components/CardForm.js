@@ -36,7 +36,9 @@ const CardForm = ({category_id}) => {
 
         if (!response.ok) {
             setError(json.error)
-            setEmptyFields(json.emptyFields)
+            setEmptyFields(e => e + json.emptyFields)
+
+            console.log(json.error)
         }
         if (response.ok) {
             setQuestion('')
@@ -46,6 +48,8 @@ const CardForm = ({category_id}) => {
             console.log('new card added', json)
             // dispatch({type: 'CREATE_CARD', payload: json})
         }
+
+        console.log("emptyFields: " + emptyFields)
     }
 
     return (
