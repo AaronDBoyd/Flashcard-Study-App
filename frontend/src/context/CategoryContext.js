@@ -26,6 +26,8 @@ export const CategoryContextProvider = ({ children }) => {
         categories: null
     })
 
+    console.log('Category state: ', state)
+
     return (
         <CategoryContext.Provider value={{...state, dispatch}}>
             { children }

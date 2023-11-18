@@ -5,6 +5,7 @@ import { useAuthContext } from "./hooks/useAuthContext";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
+import Category from "./pages/Category";
 
 function App() {
   const { user } = useAuthContext();
@@ -15,9 +16,8 @@ function App() {
         <Navbar />
         <div className="pages">
           <Routes>
-            <Route 
-              path="/" 
-              element={<Home />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/category/:title" element={<Category />} />
             <Route
               path="/login"
               element={!user ? <Login /> : <Navigate to="/" />}
