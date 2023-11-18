@@ -153,7 +153,7 @@ const deleteCard = async (req, res) => {
         card_count: cardCount
     })
 
-    res.status(200).json({card: card, categoryCardCount: cardCount})
+    res.status(200).json(card)
 }
 
 

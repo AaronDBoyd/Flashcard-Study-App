@@ -9,9 +9,15 @@ export const cardsReducer = (state, action) => {
                 cards: action.payload
             }
         case 'CREATE_CARD':
+            if (state.cards) {
                 return {
-                cards: [action.payload, ...state.cards]
+                    cards: [action.payload, ...state.cards]
                 }
+            } else {
+                return {
+                    cards: [action.payload]
+                }
+            }
         case 'DELETE_CARD':
             return {
                 cards: state.cards.filter((c) => c._id !== action.payload._id)
@@ -23,7 +29,7 @@ export const cardsReducer = (state, action) => {
 
 export const CardContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(cardsReducer, {
-        cards: []
+        cards: null
     })
 
     console.log('CardContext: ', state)
