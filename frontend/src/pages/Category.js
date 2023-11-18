@@ -1,6 +1,7 @@
 import { useParams, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { API_BASE_URL } from "../config/serverApiConfig";
+import { useCardContext } from "../hooks/useCardContext";
 
 // components
 import CardDetails from "../components/CardDetails";
@@ -8,25 +9,31 @@ import CardForm from "../components/CardForm";
 
 const Category = () => {
   const { title } = useParams();
+  const { cards, dispatch } = useCardContext();
 
-  // pull category_id from Link prop 
-  const location = useLocation()
-  const { category_id } = location.state
-  
-  const [cards, setCards] = useState(null);
+  // pull category_id from Link prop
+  const location = useLocation();
+  const { category_id } = location.state;
 
   useEffect(() => {
     const fetchCards = async () => {
-        const response = await fetch(API_BASE_URL + "/api/card/category/" + category_id)
-        const json = await response.json()
+      const response = await fetch(
+        API_BASE_URL + "/api/card/category/" + category_id
+      );
+      const json = await response.json();
 
-        if (response.ok) {
-            setCards(json)
-        }
+      if (response.ok) {
+        dispatch({ type: "SET_CARDS", payload: json });
+      }
+    };
+
+    fetchCards();
+
+    // calls when mounted on StrictMode
+    return () => {
+      dispatch({ type: 'SET_CARDS', payload: null })
     }
-
-    fetchCards()
-  }, [category_id]);
+  }, [category_id, dispatch]);
 
   // DELETE CATEGORY
   // if (!user || user.email != category.created_by_email) {
@@ -50,13 +57,12 @@ const Category = () => {
     <div>
       <h2>{title} Flash Cards</h2>
       <div className="cards">
-    <div>
-        {cards && cards.map((card) => (
-            <CardDetails key={card._id} card={card} />
-        ))}
+        <div>
+          {cards &&
+            cards.map((card) => <CardDetails key={card._id} card={card} />)}
+        </div>
+        <CardForm category_id={category_id} />
       </div>
-        <CardForm category_id={category_id}/>
-    </div>
     </div>
   );
 };

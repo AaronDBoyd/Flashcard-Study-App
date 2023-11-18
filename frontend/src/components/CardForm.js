@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { useAuthContext } from '../hooks/useAuthContext'
+import { useCardContext } from '../hooks/useCardContext'
 import { API_BASE_URL } from '../config/serverApiConfig'
 
 const CardForm = ({category_id}) => {
     const { user } = useAuthContext()
+    const { dispatch } = useCardContext()
+
     
     const [question, setQuestion] = useState('')
     const [answer, setAnswer] = useState('')
@@ -46,10 +49,8 @@ const CardForm = ({category_id}) => {
             setError(null)
             setEmptyFields([])
             console.log('new card added', json)
-            // dispatch({type: 'CREATE_CARD', payload: json})
+            dispatch({type: 'CREATE_CARD', payload: json})
         }
-
-        console.log("emptyFields: " + emptyFields)
     }
 
     return (
