@@ -1,7 +1,7 @@
 const Card = require('../models/cardModel')
 const Category = require('../models/categoryModel')
 const mongoose = require('mongoose')
-const Log = require('../../helpers/logHelper')
+const Log = require('../../helpers/Logger')
 
 
 // get all flash cards

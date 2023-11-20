@@ -1,4 +1,4 @@
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../config/serverApiConfig";
 import { useCardContext } from "../hooks/useCardContext";
@@ -50,16 +50,18 @@ const Category = () => {
     fetchCategory();
 
     // calls when mounted on StrictMode
-    return () => {
-      dispatch({ type: 'SET_CARDS', payload: null })
-    }
+    // return () => {
+    //   dispatch({ type: 'SET_CARDS', payload: null })
+    // }
   }, [category_id, dispatch]);
 
   // DELETE CATEGORY
   const handleDelete = async () => {
 
+    // SHOW WARNING MESSAGE "Are you sure you want to delete? All Cards in Category will also be deleted."
+
     if (!user || user.email !== category.created_by_email) {
-      setNotice('Must besigned in and category creator to delete a category') 
+      setNotice('Must be signed in and category creator to delete a category') 
       return
     }
     
@@ -76,11 +78,15 @@ const Category = () => {
       navigate('/')
     }
   }
+
     
   return (
     <div>
       <h2>{title} Flash Cards</h2>
-      <span onClick={handleDelete}>Delete Category </span>
+      <span className="delete-button" onClick={handleDelete}>Delete Category </span>
+      <Link to={`/test/${title}`}>
+        <span className="test-button">Test Category </span>
+      </Link>
       {notice && <span className='error'>{notice}</span>}
       <div className="cards">
         <div>

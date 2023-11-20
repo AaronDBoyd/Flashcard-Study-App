@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { API_BASE_URL } from "../config/serverApiConfig";
 import { useCategoryContext } from "../hooks/useCategoryContext";
+import { useCardContext } from "../hooks/useCardContext";
 
 // components
 import CategoryDetails from "../components/CategoryDetails";
@@ -10,6 +11,7 @@ import CategoryForm from "../components/CategoryForm";
 // possibly change to Categories
 const Home = () => {
   const { categories, dispatch } = useCategoryContext();
+  const { dispatch: cardDispatch } = useCardContext()
 
   useEffect(() => {
     const fetchCatgories = async () => {
@@ -20,6 +22,8 @@ const Home = () => {
         dispatch({ type: "SET_CATEGORIES", payload: json });
       }
     };
+
+    cardDispatch({ type: 'SET_CARDS', payload: null })
 
     fetchCatgories();
   }, [dispatch]);

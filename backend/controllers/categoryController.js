@@ -2,7 +2,7 @@ const Category = require('../models/categoryModel')
 const Card = require('../models/cardModel')
 const User = require('../models/userModel')
 const mongoose = require('mongoose')
-const Log = require('../../helpers/logHelper')
+const Log = require('../../helpers/Logger')
 
 
 // get all categories
