@@ -9,15 +9,18 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import ModalBody from "react-bootstrap/esm/ModalBody";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { API_BASE_URL } from "../config/serverApiConfig";
 
 const Test = () => {
 	const { cards } = useCardContext();
+	const { user, dispatch } = useAuthContext();
 	const [testInput, setTestInput] = useState("");
 	const [testCard, setTestCard] = useState(null);
 	const [showAnswer, setShowAnswer] = useState(false);
 	const [totalCards, setTotalCards] = useState(0);
 	const [currentCardNumber, setCurrentCardNumber] = useState(1);
-    const [isCorrect, setIsCorrect] = useState(false)
+	const [isCorrect, setIsCorrect] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -30,10 +33,11 @@ const Test = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setShowAnswer(true);
-        setTestInput('')
-        if (testCard.answer.toLowerCase() === testInput.toLowerCase()){
-            setIsCorrect(true)
-        }
+		setTestInput("");
+		if (testCard.answer.toLowerCase() === testInput.toLowerCase()) {
+			setIsCorrect(true);
+			passCard(testCard._id);
+		}
 	};
 
 	const handleNext = () => {
@@ -41,11 +45,44 @@ const Test = () => {
 		setTestCard(cards[0]);
 		setShowAnswer(false);
 		setCurrentCardNumber((prev) => prev + 1);
-        setIsCorrect(false)
+		setIsCorrect(false);
 	};
 
 	const handleHome = () => {
 		navigate("/");
+	};
+
+	// add passed card ID to user.passedCards array
+	const passCard = async (cardId) => {
+		if (!user.passedCards.includes(cardId)) {
+            
+			// add cardId to local instance of user
+            user.passedCards.push(cardId);
+            
+			// update user's passedCards array in database
+			const response = await fetch(
+				API_BASE_URL + "/api/user/",
+				{
+					method: "PATCH",
+					headers: {
+						Authorization: `Bearer ${user.token}`,
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(user),
+				}
+			)
+
+			if (response.ok) {
+				// update authcontext
+				dispatch({
+					type: "PASS_CARD",
+					payload: { passedCards: [...user.passedCards] },
+				});
+
+				// update user in local storage
+				localStorage.setItem("user", JSON.stringify(user));
+			}
+		}
 	};
 
 	return (
@@ -88,13 +125,11 @@ const Test = () => {
 						<Row>
 							<Col xs={9}>
 								<div>
-									{testCard &&
-										isCorrect ? (
-											<h3>Correct!</h3>
-										) : (
-											<h3>Incorrect</h3>
-										) }
-
+									{testCard && isCorrect ? (
+										<h3>Correct!</h3>
+									) : (
+										<h3>Incorrect</h3>
+									)}
 								</div>
 							</Col>
 							<Col xs={3}>
@@ -103,7 +138,6 @@ const Test = () => {
 										className="next-button"
 										variant="info"
 										onClick={handleNext}
-										
 									>
 										Next
 									</Button>
@@ -112,9 +146,8 @@ const Test = () => {
 										className="next-button"
 										variant="outline-info"
 										onClick={handleHome}
-										
 									>
-										 Go Home
+										Go Home
 									</Button>
 								)}
 							</Col>
