@@ -34,7 +34,7 @@ const Test = () => {
 		e.preventDefault();
 		setShowAnswer(true);
 		setTestInput("");
-		if (testCard.answer.toLowerCase() === testInput.toLowerCase()) {
+		if (testCard.answer.toLowerCase() === testInput.toLowerCase() && user) {
 			setIsCorrect(true);
 			passCard(testCard._id);
 		}
@@ -102,6 +102,7 @@ const Test = () => {
 						<Form.Control
 							type="text"
 							placeholder="type answer"
+							autoFocus
 							onChange={(e) => setTestInput(e.target.value)}
 							value={testInput}
 						/>
@@ -133,11 +134,13 @@ const Test = () => {
 								</div>
 							</Col>
 							<Col xs={3}>
-								{currentCardNumber < totalCards ? (
+								{currentCardNumber < totalCards ? (									
 									<Button
 										className="next-button"
 										variant="info"
+										type='submit'
 										onClick={handleNext}
+										autoFocus										
 									>
 										Next
 									</Button>
@@ -145,7 +148,9 @@ const Test = () => {
 									<Button
 										className="next-button"
 										variant="outline-info"
+										type='submit'
 										onClick={handleHome}
+										autoFocus
 									>
 										Go Home
 									</Button>

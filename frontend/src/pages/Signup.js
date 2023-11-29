@@ -19,6 +19,7 @@ const Signup = () => {
             <label>Email:</label>
             <input 
                 type='email'
+                autoFocus
                 onChange={(e) => setEmail(e.target.value)}
             />
             <label>Password:</label>
