@@ -19,6 +19,7 @@ const Category = () => {
 	const [category, setCategory] = useState(null);
 	const [notice, setNotice] = useState("");
 	const [confirm, setConfirm] = useState(false);
+	const [noCards, setNoCards] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -35,6 +36,8 @@ const Category = () => {
 
 			if (response.ok) {
 				dispatch({ type: "SET_CARDS", payload: json });
+			} else {
+				setNoCards(true);
 			}
 		};
 
@@ -52,10 +55,6 @@ const Category = () => {
 		fetchCards();
 		fetchCategory();
 
-		// calls when mounted on StrictMode
-		// return () => {
-		//   dispatch({ type: 'SET_CARDS', payload: null })
-		// }
 	}, [category_id, dispatch]);
 
 	// DELETE CATEGORY
@@ -82,7 +81,6 @@ const Category = () => {
 				},
 			}
 		);
-		//const json = await response.json()
 
 		if (response.ok) {
 			await categoryDispatch({ type: "SET_CATEGORIES", payload: null });
@@ -98,9 +96,11 @@ const Category = () => {
 					Delete Category{" "}
 				</button>
 			)}
-			<Link to={`/test/${title}`}>
-				<span className="test-button">Test Category </span>
-			</Link>
+			{cards && (
+				<Link to={`/test/${title}`}>
+					<span className="test-button">Test Category </span>
+				</Link>
+			)}
 			{notice && <span className="error">{notice}</span>}
 			<div className="cards">
 				<div>
@@ -108,7 +108,11 @@ const Category = () => {
 						cards.map((card) => (
 							<CardDetails key={card._id} card={card} />
 						))}
+					{noCards && (
+						<h3>Use form to add flash cards to this category.</h3>
+					)}
 				</div>
+
 				<CardForm category_id={category_id} />
 			</div>
 			<Modal show={confirm} onHide={handleClose}>
