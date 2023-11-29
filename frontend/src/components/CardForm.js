@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useAuthContext } from '../hooks/useAuthContext'
 import { useCardContext } from '../hooks/useCardContext'
 import { API_BASE_URL } from '../config/serverApiConfig'
+import { useToken } from '../hooks/useToken'
 
 const CardForm = ({category_id}) => {
     const { user } = useAuthContext()
     const { dispatch } = useCardContext()
+    const { resetToken } = useToken()
 
     
     const [question, setQuestion] = useState('')
@@ -38,6 +40,10 @@ const CardForm = ({category_id}) => {
         const json = await response.json()
 
         if (!response.ok) {
+            if (response.status === 401) {
+                resetToken()
+                return
+              }
             setError(json.error)
             setEmptyFields(e => e + json.emptyFields)
 

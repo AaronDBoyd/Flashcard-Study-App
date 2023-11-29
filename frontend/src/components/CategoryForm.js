@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useCategoryContext } from '../hooks/useCategoryContext';
 import { API_BASE_URL } from "../config/serverApiConfig";
+import { useToken } from "../hooks/useToken"
 
 
 const CategoryForm = () => {
   const { dispatch } = useCategoryContext()
   const { user } = useAuthContext();
+  const { resetToken } = useToken()
 
   const [title, setTitle] = useState("");
 // private
@@ -37,6 +39,10 @@ const CategoryForm = () => {
     const json = await response.json()
 
     if (!response.ok) {
+      if (response.status === 401) {
+        resetToken()
+        return
+      }
         setError(json.error)
         setEmptyFields(json.emptyFields)
     }
