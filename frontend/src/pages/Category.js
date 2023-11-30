@@ -27,6 +27,7 @@ const Category = () => {
 	const location = useLocation();
 	const { category_id } = location.state;
 
+	// GET cards & category
 	useEffect(() => {
 		const fetchCards = async () => {
 			const response = await fetch(
@@ -41,6 +42,7 @@ const Category = () => {
 			}
 		};
 
+		// Why did I fetch the category instead of passing it down?
 		const fetchCategory = async () => {
 			const response = await fetch(
 				API_BASE_URL + "/api/category/" + category_id

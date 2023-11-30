@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useCardContext } from "../hooks/useCardContext";
 import { shuffleArray } from "../helpers/shuffleArray";
 import Modal from "react-bootstrap/Modal";
@@ -21,13 +21,21 @@ const Test = () => {
 	const [totalCards, setTotalCards] = useState(0);
 	const [currentCardNumber, setCurrentCardNumber] = useState(1);
 	const [isCorrect, setIsCorrect] = useState(false);
+	const [isMultipleChoice, setIsMultipleChoice] = useState(false);
+	const [multipleAnswerArray, setMultipleAnswerArray] = useState([])
+	const [referenceAnswerArray, setReferenceAnswerArray] = useState(cards.slice())
 
 	const navigate = useNavigate();
-
+	
 	useEffect(() => {
 		shuffleArray(cards);
 		setTestCard(cards[0]);
 		setTotalCards(cards.length);
+		setIsMultipleChoice(cards[0].multiple_choice);
+
+		if (cards[0].multiple_choice){
+			assignMultipleAnswerArray()
+		}
 	}, [cards]);
 
 	const handleSubmit = async (e) => {
@@ -46,6 +54,10 @@ const Test = () => {
 		setShowAnswer(false);
 		setCurrentCardNumber((prev) => prev + 1);
 		setIsCorrect(false);
+		setIsMultipleChoice(cards[0].multiple_choice);
+		if (cards[0].multiple_choice){
+			assignMultipleAnswerArray()
+		}
 	};
 
 	const handleHome = () => {
@@ -55,22 +67,18 @@ const Test = () => {
 	// add passed card ID to user.passedCards array
 	const passCard = async (cardId) => {
 		if (!user.passedCards.includes(cardId)) {
-            
 			// add cardId to local instance of user
-            user.passedCards.push(cardId);
-            
+			user.passedCards.push(cardId);
+
 			// update user's passedCards array in database
-			const response = await fetch(
-				API_BASE_URL + "/api/user/",
-				{
-					method: "PATCH",
-					headers: {
-						Authorization: `Bearer ${user.token}`,
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(user),
-				}
-			)
+			const response = await fetch(API_BASE_URL + "/api/user/", {
+				method: "PATCH",
+				headers: {
+					Authorization: `Bearer ${user.token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(user),
+			});
 
 			if (response.ok) {
 				// update authcontext
@@ -85,6 +93,29 @@ const Test = () => {
 		}
 	};
 
+	const assignMultipleAnswerArray = () => {
+		let answerArray = []
+		// push current card answer into answerArray
+		answerArray.push(cards[0].answer)
+
+		const min = 1
+		const max = referenceAnswerArray.length - 1
+
+		while (answerArray.length < 4 ) {
+			const randomIndex = Math.floor(Math.random() * (max - min) + min)
+
+			// look at random index in cards array answers
+			if (!answerArray.includes(referenceAnswerArray[randomIndex].answer)) {
+				// push answer into answerArray
+				answerArray.push(referenceAnswerArray[randomIndex].answer)
+			}
+		}
+
+		// shuffle array
+		shuffleArray(answerArray)
+		setMultipleAnswerArray(answerArray)
+	}
+
 	return (
 		<div>
 			<div className="test">
@@ -98,14 +129,22 @@ const Test = () => {
 				</div>
 				<Form onSubmit={handleSubmit}>
 					<Form.Group className="mb-3">
-						<Form.Label>Answer</Form.Label>
-						<Form.Control
-							type="text"
-							placeholder="type answer"
-							autoFocus
-							onChange={(e) => setTestInput(e.target.value)}
-							value={testInput}
-						/>
+						{isMultipleChoice ? (
+							<Form.Label>Multiple Choice: True</Form.Label>
+						) : (
+							<>
+								<Form.Label>Answer</Form.Label>
+								<Form.Control
+									type="text"
+									placeholder="type answer"
+									autoFocus
+									onChange={(e) =>
+										setTestInput(e.target.value)
+									}
+									value={testInput}
+								/>
+							</>
+						)}
 					</Form.Group>
 					<Button variant="info" type="submit">
 						Submit
@@ -134,13 +173,13 @@ const Test = () => {
 								</div>
 							</Col>
 							<Col xs={3}>
-								{currentCardNumber < totalCards ? (									
+								{currentCardNumber < totalCards ? (
 									<Button
 										className="next-button"
 										variant="info"
-										type='submit'
+										type="submit"
 										onClick={handleNext}
-										autoFocus										
+										autoFocus
 									>
 										Next
 									</Button>
@@ -148,7 +187,7 @@ const Test = () => {
 									<Button
 										className="next-button"
 										variant="outline-info"
-										type='submit'
+										type="submit"
 										onClick={handleHome}
 										autoFocus
 									>

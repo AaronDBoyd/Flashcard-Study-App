@@ -154,6 +154,11 @@ input.error {
   border: 1px solid var(--error);
 }
 
+.checkbox-wrapper {
+  display: flex;
+  justify-content: flex-start;
+}
+
 /* navbar */
 nav {
   display: flex;
