@@ -7,7 +7,7 @@ const categorySchema = new Schema({
         type: String,
         required: true
     },
-    private: {
+    isPrivate: {
         type: Boolean,
         required: true,
         default: false

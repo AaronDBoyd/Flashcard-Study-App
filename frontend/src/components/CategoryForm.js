@@ -1,82 +1,97 @@
 import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
-import { useCategoryContext } from '../hooks/useCategoryContext';
+import { useCategoryContext } from "../hooks/useCategoryContext";
 import { API_BASE_URL } from "../config/serverApiConfig";
-import { useToken } from "../hooks/useToken"
-
+import { useToken } from "../hooks/useToken";
 
 const CategoryForm = () => {
-  const { dispatch } = useCategoryContext()
-  const { user } = useAuthContext();
-  const { resetToken } = useToken()
+	const { dispatch } = useCategoryContext();
+	const { user } = useAuthContext();
+	const { resetToken } = useToken();
 
-  const [title, setTitle] = useState("");
-// private
-// multipleChoice
-// color
-  const [error, setError] = useState(null)
-  const [emptyFields, setEmptyFields] = useState([])
+	const [title, setTitle] = useState("");
+	const [isPrivate, setIsPrivate] = useState(false);
+	// color
+	const [error, setError] = useState(null);
+	const [emptyFields, setEmptyFields] = useState([]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+	const handleSubmit = async (e) => {
+		e.preventDefault();
 
-    if (!user) {
-        setError('You must be logged in')
-        return
-    }
+		if (!user) {
+			setError("You must be logged in");
+			return;
+		}
 
-    const category = { title }
+		console.log(isPrivate);
 
-    const response = await fetch(API_BASE_URL + '/api/category', {
-        method: 'POST',
-        body: JSON.stringify(category),
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.token}`
-        }
-    })
+		const category = { title, isPrivate };
 
-    const json = await response.json()
+		const response = await fetch(API_BASE_URL + "/api/category", {
+			method: "POST",
+			body: JSON.stringify(category),
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${user.token}`,
+			},
+		});
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        resetToken()
-        return
-      }
-        setError(json.error)
-        setEmptyFields(json.emptyFields)
-    }
-    if (response.ok) {
-        setTitle('')
-        setError(null)
-        setEmptyFields([])
-        console.log('new category added', json)
-        dispatch({type: 'CREATE_CATEGORY', payload: json})
-    }
-  };
+		const json = await response.json();
 
-  return (
-  <form className="create" onSubmit={handleSubmit}>
-    <h3> Add a New Category</h3>
+		if (!response.ok) {
+			if (response.status === 401) {
+				resetToken();
+				return;
+			}
+			setError(json.error);
+			setEmptyFields(json.emptyFields);
+		}
+		if (response.ok) {
+			setTitle("");
+			setIsPrivate(false);
+			setError(null);
+			setEmptyFields([]);
+			console.log("new category added", json);
+			dispatch({ type: "CREATE_CATEGORY", payload: json });
+		}
+	};
 
-    <label>Category Title:</label>
-    <input 
-        type='text'
-        onChange={(e) => setTitle(e.target.value)}
-        value={title}
-        className={emptyFields.includes('title') ? 'error' : ''}
-    />
+	return (
+		<form className="create" onSubmit={handleSubmit}>
+			<h3> Add a New Category</h3>
 
-    {/* private field */}
+			<label>Category Title:</label>
+			<input
+				type="text"
+				onChange={(e) => setTitle(e.target.value)}
+				value={title}
+				className={emptyFields.includes("title") ? "error" : ""}
+			/>
 
-    {/* mulitpleChoice */}
+			{/* private field */}
+			<div
+				className="checkbox-wrapper"
+				style={{
+					display: "flex",
+					justifyContent: "flex-start",
+					width: "200px",
+				}}
+			>
+				<input
+					type="checkbox"
+					value={isPrivate}
+					checked={isPrivate}
+					onChange={(e) => setIsPrivate((prev) => !prev)}
+				/>
+				<label>Private</label>
+			</div>
 
-    {/* color */}
+			{/* color */}
 
-    <button>Add Category</button>
-    {error && <div className="error">{error}</div>}
-  </form>
-  )
+			<button>Add Category</button>
+			{error && <div className="error">{error}</div>}
+		</form>
+	);
 };
 
 export default CategoryForm;

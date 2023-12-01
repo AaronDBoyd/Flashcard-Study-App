@@ -48,8 +48,7 @@ const getCategoriesByUser = async (req, res) => {
 
 // create a new category
 const createCategory = async (req, res) => {
-    //const { title, created_by, private, color } = req.body
-    const { title, private, color } = req.body
+    const { title, isPrivate, color } = req.body
     const created_by_id = req.user._id
 
     let emptyFields = []
@@ -57,22 +56,14 @@ const createCategory = async (req, res) => {
     if(!title) {
         emptyFields.push('title')
     }
-    // if(!created_by){
-    //     emptyFields.push('created_by')
-    // }
-    // if(!private) {
-    //     emptyFields.push('private')
-    // }
-    // if(!color){
-    //     emptyFields.push('color')
-    // }
+
     if(emptyFields.length > 0){
         return res.status(400).json({error: 'Please fill out required fields', emptyFields})
     }
 
-    // check if category already exists
+    // check if category already exists for user
     const exists = await Category.findOne({ title })
-    if (exists && exists.title.toLowerCase() == title.toLowerCase()) {
+    if (exists && exists.title.toLowerCase() == title.toLowerCase() && exists.created_by_id == created_by_id) {
         return res.status(400).json({error: 'Category already exists'})
     }
 
@@ -83,7 +74,7 @@ const createCategory = async (req, res) => {
     // add doc to db
     try{
         //const user_id = req.user._id
-        const category = await Category.create({title, private, color, created_by_id, created_by_email})
+        const category = await Category.create({title, isPrivate, color, created_by_id, created_by_email})
         res.status(200).json(category)
     } catch (error) {
         res.status(400).json({error: error.message})
