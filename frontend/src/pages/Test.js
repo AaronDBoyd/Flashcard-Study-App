@@ -22,19 +22,21 @@ const Test = () => {
 	const [currentCardNumber, setCurrentCardNumber] = useState(1);
 	const [isCorrect, setIsCorrect] = useState(false);
 	const [isMultipleChoice, setIsMultipleChoice] = useState(false);
-	const [multipleAnswerArray, setMultipleAnswerArray] = useState([])
-	const [referenceAnswerArray, setReferenceAnswerArray] = useState(cards.slice())
+	const [multipleAnswerArray, setMultipleAnswerArray] = useState([]);
+	const [referenceAnswerArray, setReferenceAnswerArray] = useState(
+		cards.slice()
+	);
 
 	const navigate = useNavigate();
-	
+
 	useEffect(() => {
 		shuffleArray(cards);
 		setTestCard(cards[0]);
 		setTotalCards(cards.length);
 		setIsMultipleChoice(cards[0].multiple_choice);
 
-		if (cards[0].multiple_choice){
-			assignMultipleAnswerArray()
+		if (cards[0].multiple_choice) {
+			assignMultipleAnswerArray();
 		}
 	}, [cards]);
 
@@ -55,8 +57,8 @@ const Test = () => {
 		setCurrentCardNumber((prev) => prev + 1);
 		setIsCorrect(false);
 		setIsMultipleChoice(cards[0].multiple_choice);
-		if (cards[0].multiple_choice){
-			assignMultipleAnswerArray()
+		if (cards[0].multiple_choice) {
+			assignMultipleAnswerArray();
 		}
 	};
 
@@ -94,27 +96,29 @@ const Test = () => {
 	};
 
 	const assignMultipleAnswerArray = () => {
-		let answerArray = []
+		let answerArray = [];
 		// push current card answer into answerArray
-		answerArray.push(cards[0].answer)
+		answerArray.push(cards[0].answer);
 
-		const min = 1
-		const max = referenceAnswerArray.length - 1
+		const min = 1;
+		const max = referenceAnswerArray.length - 1;
 
-		while (answerArray.length < 4 ) {
-			const randomIndex = Math.floor(Math.random() * (max - min) + min)
+		while (answerArray.length < 4) {
+			const randomIndex = Math.floor(Math.random() * (max - min) + min);
 
 			// look at random index in cards array answers
-			if (!answerArray.includes(referenceAnswerArray[randomIndex].answer)) {
+			if (
+				!answerArray.includes(referenceAnswerArray[randomIndex].answer)
+			) {
 				// push answer into answerArray
-				answerArray.push(referenceAnswerArray[randomIndex].answer)
+				answerArray.push(referenceAnswerArray[randomIndex].answer);
 			}
 		}
 
 		// shuffle array
-		shuffleArray(answerArray)
-		setMultipleAnswerArray(answerArray)
-	}
+		shuffleArray(answerArray);
+		setMultipleAnswerArray(answerArray);
+	};
 
 	return (
 		<div>
@@ -130,7 +134,16 @@ const Test = () => {
 				<Form onSubmit={handleSubmit}>
 					<Form.Group className="mb-3">
 						{isMultipleChoice ? (
-							<Form.Label>Multiple Choice: True</Form.Label>
+							multipleAnswerArray.map((answer) => (
+								<Form.Check
+									type="radio"
+									key={answer.index}
+									value={answer}
+									label={answer}
+									checked={testInput === { answer }}
+									onChange={() => setTestInput(answer)}
+								/>
+							))
 						) : (
 							<>
 								<Form.Label>Answer</Form.Label>
