@@ -10,9 +10,9 @@ import CategoryDetails from "../components/CategoryDetails";
 import CategoryForm from "../components/CategoryForm";
 
 // possibly change to Categories
-const Home = () => {
+const Home = ({ categories }) => {
 	const { user } = useAuthContext();
-	const { categories, dispatch } = useCategoryContext();
+	const { dispatch } = useCategoryContext();
 	const { dispatch: cardDispatch } = useCardContext();
 
 	useEffect(() => {

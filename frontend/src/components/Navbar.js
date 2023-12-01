@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useLogout } from '../hooks/useLogout'
 import { useAuthContext } from '../hooks/useAuthContext'
 
-const Navbar = () => {
+const Navbar = ({ handleSearch }) => {
     const { logout } = useLogout()
     const { user } = useAuthContext()
 
@@ -16,6 +16,9 @@ const Navbar = () => {
                 <Link to="/">
                     <h1>Flash Study</h1>
                 </Link>
+                <div >
+                <input placeholder='search' onChange={handleSearch}/>
+                </div>
                 <nav>
                     {user && (
                         <div>

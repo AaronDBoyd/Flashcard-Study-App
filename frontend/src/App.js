@@ -8,17 +8,38 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Test from "./pages/Test";
+import { useCategoryContext } from "./hooks/useCategoryContext";
+import { useState } from "react";
 
 function App() {
   const { user } = useAuthContext();
+  const { categories } = useCategoryContext();
+  const [ filteredCategories, setFilteredCategories ] = useState(categories)
+
+  const handleSearch = (e) => {
+    // convert input to lower case
+    const lowerCase = e.target.value.toLowerCase()
+    // if no input, return all categories
+    const filteredData = categories.filter((category => {
+      if (lowerCase === '') {
+        return category
+      }
+      // return categories that contain the input sub string
+      else {
+        return category.title.toLowerCase().includes(lowerCase)
+      }     
+    }))
+    
+    setFilteredCategories(filteredData)
+  }
 
   return (
     <div className="App">
       <BrowserRouter>
-        <Navbar />
+        <Navbar handleSearch={handleSearch} />
         <div className="pages">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home categories={filteredCategories} />} />
             <Route path="/category/:title" element={<Category />} />
             <Route
               path="/login"
