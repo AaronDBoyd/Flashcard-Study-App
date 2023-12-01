@@ -8,12 +8,13 @@ const CategoryForm = () => {
 	const { dispatch } = useCategoryContext();
 	const { user } = useAuthContext();
 	const { resetToken } = useToken();
-
 	const [title, setTitle] = useState("");
 	const [isPrivate, setIsPrivate] = useState(false);
-	// color
+	const [color, setColor] = useState("Black");
 	const [error, setError] = useState(null);
 	const [emptyFields, setEmptyFields] = useState([]);
+
+	const colorsArray = ["Blue", "Green", "Purple", "Orange"];
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -25,7 +26,7 @@ const CategoryForm = () => {
 
 		console.log(isPrivate);
 
-		const category = { title, isPrivate };
+		const category = { title, isPrivate, color };
 
 		const response = await fetch(API_BASE_URL + "/api/category", {
 			method: "POST",
@@ -87,7 +88,22 @@ const CategoryForm = () => {
 			</div>
 
 			{/* color */}
-
+			<label>Color:</label>
+			{colorsArray.map((c) => (
+				<div
+					className="checkbox-wrapper"
+					key={c}
+					style={{ width: "200px" }}
+				>
+					<input
+						type="radio"
+						value={c}
+						checked={color === `${ c }`}
+						onChange={() => setColor(c)}
+					/>
+					<label style={{ color: `${ c }` }}>{c}</label>
+				</div>
+			))}
 			<button>Add Category</button>
 			{error && <div className="error">{error}</div>}
 		</form>
