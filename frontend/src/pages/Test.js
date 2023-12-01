@@ -103,7 +103,10 @@ const Test = () => {
 		const min = 1;
 		const max = referenceAnswerArray.length - 1;
 
-		while (answerArray.length < 4) {
+		while (
+			answerArray.length < 4 &&
+			answerArray.lenth < referenceAnswerArray.length
+		) {
 			const randomIndex = Math.floor(Math.random() * (max - min) + min);
 
 			// look at random index in cards array answers

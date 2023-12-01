@@ -5,17 +5,13 @@ import { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/esm/Button";
 
-const CardDetails = ({ card }) => {
+const CardDetails = ({ card, color }) => {
 	const { dispatch } = useCardContext();
 	const { user } = useAuthContext();
 	const [confirm, setConfirm] = useState(false);
 
 	const handleDelete = async () => {
-		// if (!user) {
-		// 	return;
-		// }
         setConfirm(true)
-
 	};
     
 	const handleConfirm = async () => {
@@ -41,7 +37,9 @@ const CardDetails = ({ card }) => {
 	return (
 		<>
 			<div className="card-details">
+				<div style={{color: `${color}`}}>
 				<h4>{card.question}</h4>
+				</div>
 				{user && <span onClick={handleDelete}>delete</span>}
 			</div>
 			<Modal show={confirm} onHide={handleClose}>

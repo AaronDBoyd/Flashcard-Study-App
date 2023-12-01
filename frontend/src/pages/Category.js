@@ -19,7 +19,7 @@ const Category = () => {
 	const [category, setCategory] = useState(null);
 	const [notice, setNotice] = useState("");
 	const [confirm, setConfirm] = useState(false);
-	const [noCards, setNoCards] = useState(false);
+	const [color, setColor] = useState("");
 
 	const navigate = useNavigate();
 
@@ -37,8 +37,6 @@ const Category = () => {
 
 			if (response.ok) {
 				dispatch({ type: "SET_CARDS", payload: json });
-			} else {
-				setNoCards(true);
 			}
 		};
 
@@ -51,12 +49,12 @@ const Category = () => {
 
 			if (response.ok) {
 				setCategory((c) => json);
+				setColor(json.color);
 			}
 		};
 
-		fetchCards();
 		fetchCategory();
-
+		fetchCards();
 	}, [category_id, dispatch]);
 
 	// DELETE CATEGORY
@@ -92,7 +90,10 @@ const Category = () => {
 
 	return (
 		<div>
-			<h2>{title} Flash Cards</h2>
+			<h2>
+				<span style={{ color: `${color}` }}>{title}</span> Flash Cards
+			</h2>
+
 			{user && (
 				<button className="delete-button" onClick={handleDelete}>
 					Delete Category{" "}
@@ -108,9 +109,13 @@ const Category = () => {
 				<div>
 					{cards &&
 						cards.map((card) => (
-							<CardDetails key={card._id} card={card} />
+							<CardDetails
+								key={card._id}
+								card={card}
+								color={color}
+							/>
 						))}
-					{noCards && (
+					{!cards && (
 						<h3>Use form to add flash cards to this category.</h3>
 					)}
 				</div>

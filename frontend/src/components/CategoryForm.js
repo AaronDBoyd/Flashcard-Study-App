@@ -3,6 +3,7 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import { useCategoryContext } from "../hooks/useCategoryContext";
 import { API_BASE_URL } from "../config/serverApiConfig";
 import { useToken } from "../hooks/useToken";
+import { SketchPicker } from "react-color";
 
 const CategoryForm = () => {
 	const { dispatch } = useCategoryContext();
@@ -10,11 +11,10 @@ const CategoryForm = () => {
 	const { resetToken } = useToken();
 	const [title, setTitle] = useState("");
 	const [isPrivate, setIsPrivate] = useState(false);
-	const [color, setColor] = useState("Black");
 	const [error, setError] = useState(null);
 	const [emptyFields, setEmptyFields] = useState([]);
-
-	const colorsArray = ["Blue", "Green", "Purple", "Orange"];
+	const [isCustomColor, setIsCustomColor] = useState(false);
+	const [color, setColor] = useState("#1aac83");
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -23,8 +23,6 @@ const CategoryForm = () => {
 			setError("You must be logged in");
 			return;
 		}
-
-		console.log(isPrivate);
 
 		const category = { title, isPrivate, color };
 
@@ -57,6 +55,10 @@ const CategoryForm = () => {
 		}
 	};
 
+	const handleChangeColor = (c) => {
+		setColor(c.hex);
+	};
+
 	return (
 		<form className="create" onSubmit={handleSubmit}>
 			<h3> Add a New Category</h3>
@@ -76,6 +78,9 @@ const CategoryForm = () => {
 					display: "flex",
 					justifyContent: "flex-start",
 					width: "200px",
+					marginLeft: "-40px",
+					height: "70px",
+					fontSize: "20px",
 				}}
 			>
 				<input
@@ -89,21 +94,32 @@ const CategoryForm = () => {
 
 			{/* color */}
 			<label>Color:</label>
-			{colorsArray.map((c) => (
-				<div
-					className="checkbox-wrapper"
-					key={c}
-					style={{ width: "200px" }}
-				>
-					<input
-						type="radio"
-						value={c}
-						checked={color === `${ c }`}
-						onChange={() => setColor(c)}
-					/>
-					<label style={{ color: `${ c }` }}>{c}</label>
-				</div>
-			))}
+			<br />
+			<div
+				className="checkbox-wrapper"
+				style={{
+					display: "flex",
+					justifyContent: "flex-start",
+					width: "200px",
+					marginLeft: "-20px",
+				}}
+			>
+				<input
+					type="checkbox"
+					value={isCustomColor}
+					checked={isCustomColor}
+					onChange={(e) => setIsCustomColor((prev) => !prev)}
+				/>
+				<label>Check for custom color</label>
+			</div>
+
+			{isCustomColor && (
+				<SketchPicker
+					color={color}
+					onChangeComplete={handleChangeColor}
+				/>
+			)}
+			<br />
 			<button>Add Category</button>
 			{error && <div className="error">{error}</div>}
 		</form>
