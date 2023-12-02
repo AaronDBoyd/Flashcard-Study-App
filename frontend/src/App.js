@@ -31,21 +31,23 @@ function App() {
 	const filterCategories = (input) => {
 		setSearchInput(input);
 
-		// if no input, return all categories
-		const filteredData = categories.filter((category) => {
-			if (input === "") {
-				return category;
-			}
-			// return categories that contain the input sub string
-			else {
-				return category.title.toLowerCase().includes(input);
-			}
-		});
+		if (categories) {
+			// if no input, return all categories
+			const filteredData = categories.filter((category) => {
+				if (input === "") {
+					return category;
+				}
+				// return categories that contain the input sub string
+				else {
+					return category.title.toLowerCase().includes(input);
+				}
+			});
 
-		if (input === "") {
-			setFilteredCategories(categories);
-		} else {
-			setFilteredCategories(filteredData);
+			if (input === "") {
+				setFilteredCategories(categories);
+			} else {
+				setFilteredCategories(filteredData);
+			}
 		}
 	};
 

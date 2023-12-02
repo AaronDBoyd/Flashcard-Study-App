@@ -22,6 +22,16 @@ export const cardsReducer = (state, action) => {
             return {
                 cards: state.cards.filter((c) => c._id !== action.payload._id)
             }
+        case "UPDATE_CARD":
+            return {
+                cards: state.cards.map(card => {
+                    if (card._id === action.payload._id) {
+                        return {...card, ...action.payload }
+                    } else {
+                        return card
+                    }
+                })
+            }
         default:
             return state
     }

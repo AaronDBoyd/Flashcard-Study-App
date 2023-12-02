@@ -99,13 +99,16 @@ header a {
   margin: 20px;
   padding: 20px;
   position: relative;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05)
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
+  display: "flex";
 }
 
 .card-details span {
   position: absolute;
   top: 20px;
-  right: 20px;
+  /* right: 20px; */
+  text-align: center;
+  width: 80px;
   cursor: pointer;
   background: #f1f1f1;
   padding: 6px;

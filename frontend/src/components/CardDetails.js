@@ -4,12 +4,14 @@ import { API_BASE_URL } from "../config/serverApiConfig";
 import { useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/esm/Button";
+import Form from "react-bootstrap/Form";
+import CardEditForm from "./CardEditForm";
 
 const CardDetails = ({ card, color }) => {
 	const { dispatch } = useCardContext();
 	const { user } = useAuthContext();
 	const [confirm, setConfirm] = useState(false);
-	const [edit, setEdit] = useState(false)
+	const [edit, setEdit] = useState(false);
 
 	const handleDelete = async () => {
 		setConfirm(true);
@@ -41,14 +43,24 @@ const CardDetails = ({ card, color }) => {
 				<div style={{ color: `${color}` }}>
 					<h4>{card.question}</h4>
 				</div>
-				{user && <span onClick={() => setEdit(true)}>Edit</span>}
 
-				{user && <span onClick={handleDelete}>delete</span>}
+				{user && (
+					<span
+						style={{ right: "150px" }}
+						onClick={() => setEdit(true)}
+					>
+						Edit
+					</span>
+				)}
+
+				{user && (
+					<span style={{ right: "20px" }} onClick={handleDelete}>
+						Delete
+					</span>
+				)}
 			</div>
 
-<Modal show={edit} onHide={() => setEdit(false)}>
-	<label>Edit</label>
-</Modal>
+			{edit && <CardEditForm card={card} edit={edit} setEdit={setEdit} />}
 
 			<Modal show={confirm} onHide={handleClose}>
 				<Modal.Header closeButton>
