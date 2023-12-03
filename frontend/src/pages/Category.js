@@ -6,11 +6,10 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import { useCategoryContext } from "../hooks/useCategoryContext";
 
 // components
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/esm/Button";
 import CardDetails from "../components/CardDetails";
 import CardForm from "../components/CardForm";
-import CategoryEditForm from "../components/CategoryEditForm"
+import CategoryEditForm from "../components/CategoryEditForm";
+import DeleteModal from "../components/DeleteModal";
 
 const Category = () => {
 	const { title } = useParams();
@@ -22,10 +21,9 @@ const Category = () => {
 
 	// state
 	const [category, setCategory] = useState(null);
-	const [notice, setNotice] = useState("");
 	const [confirm, setConfirm] = useState(false);
 	const [color, setColor] = useState("");
-	const [editCategory, setEditCategory] = useState(false)
+	const [editCategory, setEditCategory] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -40,7 +38,7 @@ const Category = () => {
 				API_BASE_URL + "/api/category/" + category_id
 			);
 			const json = await response.json();
-	
+
 			if (response.ok) {
 				setCategory(json);
 				setColor(json.color);
@@ -61,20 +59,6 @@ const Category = () => {
 		fetchCards();
 	}, [category_id, dispatch]);
 
-	// DELETE CATEGORY
-	const handleDelete = () => {
-		if (!user || user.email !== category.created_by_email) {
-			setNotice(
-				"Must be signed in and category creator to delete a category"
-			);
-			return;
-		} else {
-			setConfirm(true);
-		}
-	};
-
-	const handleClose = () => setConfirm(false);
-
 	const handleConfirmDelete = async () => {
 		const response = await fetch(
 			API_BASE_URL + "/api/category/" + category_id,
@@ -92,24 +76,31 @@ const Category = () => {
 		}
 	};
 
-	const handleEditCategory = () => {
-		setEditCategory(true)
-	}
-
 	return (
 		<div>
 			<h2>
-				{category && <span style={{ color: `${category.color}` }}>{category.title}</span>} Flash Cards 
+				{category && (
+					<span style={{ color: `${category.color}` }}>
+						{category.title}
+					</span>
+				)}{" "}
+				Flash Cards
 			</h2>
 
 			{user && category && user.email === category.created_by_email && (
-				<button className="delete-button" onClick={handleDelete}>
+				<button
+					className="delete-button"
+					onClick={() => setConfirm(true)}
+				>
 					Delete Category{" "}
 				</button>
 			)}
 
 			{user && category && user.email === category.created_by_email && (
-				<button className="edit-button" onClick={handleEditCategory}>
+				<button
+					className="edit-button"
+					onClick={() => setEditCategory(true)}
+				>
 					Edit Category
 				</button>
 			)}
@@ -119,7 +110,7 @@ const Category = () => {
 					<span className="test-button">Test Category </span>
 				</Link>
 			)}
-			{notice && <span className="error">{notice}</span>}
+
 			<div className="cards">
 				<div>
 					{cards &&
@@ -137,25 +128,24 @@ const Category = () => {
 
 				<CardForm category_id={category_id} />
 			</div>
-						{/* Edit Form Modal */}
-			{editCategory && <CategoryEditForm category={category} setCategory={setCategory} editCategory={editCategory} setEditCategory={setEditCategory} />}
+			{/* Edit Form Modal */}
+			{editCategory && (
+				<CategoryEditForm
+					category={category}
+					setCategory={setCategory}
+					editCategory={editCategory}
+					setEditCategory={setEditCategory}
+				/>
+			)}
 
-			<Modal show={confirm} onHide={handleClose}>
-				<Modal.Header closeButton>
-					<Modal.Title>Are you sure?</Modal.Title>
-				</Modal.Header>
-				<Modal.Body>
-					Deleting a category will delete all related cards.
-				</Modal.Body>
-				<Modal.Footer>
-					<Button variant="secondary" onClick={handleClose}>
-						Close
-					</Button>
-					<Button variant="danger" onClick={handleConfirmDelete}>
-						Confirm Delete
-					</Button>
-				</Modal.Footer>
-			</Modal>
+			{confirm && (
+				<DeleteModal
+					message="Deleting a category will delete all related cards."
+					confirm={confirm}
+					setConfirm={setConfirm}
+					handleConfirm={handleConfirmDelete}
+				/>
+			)}
 		</div>
 	);
 };
