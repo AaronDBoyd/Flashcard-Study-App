@@ -16,6 +16,16 @@ export const categoriesReducer = (state, action) => {
             return {
                 categories: state.categories.filter((w) => w._id !== action.payload._id)
             }
+        case 'UPDATE_CATEGORY':
+            return {
+                categories: state.categories.map(category => {
+                    if (category._id === action.payload._id) {
+                        return {...category, ...action.payload}
+                    } else {
+                        return category
+                    }
+                })
+            }
         default: 
             return state
     }

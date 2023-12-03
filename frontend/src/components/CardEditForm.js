@@ -8,11 +8,17 @@ import { useCardContext } from "../hooks/useCardContext";
 import { useToken } from "../hooks/useToken";
 
 const CardEditForm = ({ card, edit, setEdit }) => {
-	const [question, setQuestion] = useState(card.question);
-	const [answer, setAnswer] = useState(card.answer);
-	const [multipleChoice, setMultipleChoice] = useState(card.multiple_choice);
+	// context
 	const { user } = useAuthContext();
 	const { dispatch } = useCardContext();
+
+	// state
+	const [question, setQuestion] = useState(card.question);
+	const [answer, setAnswer] = useState(card.answer);
+	const [multipleChoice, setMultipleChoice] = useState(
+		card.setMultipleChoice
+	);
+	
 	const { resetToken } = useToken();
 
 	const handleSubmit = async (e) => {

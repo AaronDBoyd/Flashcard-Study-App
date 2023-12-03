@@ -4,22 +4,28 @@ import { API_BASE_URL } from "../config/serverApiConfig";
 import { useCardContext } from "../hooks/useCardContext";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useCategoryContext } from "../hooks/useCategoryContext";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/esm/Button";
 
 // components
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/esm/Button";
 import CardDetails from "../components/CardDetails";
 import CardForm from "../components/CardForm";
+import CategoryEditForm from "../components/CategoryEditForm"
 
 const Category = () => {
 	const { title } = useParams();
-	const { cards, dispatch } = useCardContext();
+
+	// context
 	const { user } = useAuthContext();
+	const { cards, dispatch } = useCardContext();
 	const { dispatch: categoryDispatch } = useCategoryContext();
+
+	// state
 	const [category, setCategory] = useState(null);
 	const [notice, setNotice] = useState("");
 	const [confirm, setConfirm] = useState(false);
 	const [color, setColor] = useState("");
+	const [editCategory, setEditCategory] = useState(false)
 
 	const navigate = useNavigate();
 
@@ -29,6 +35,17 @@ const Category = () => {
 
 	// GET cards & category
 	useEffect(() => {
+		const fetchCategory = async () => {
+			const response = await fetch(
+				API_BASE_URL + "/api/category/" + category_id
+			);
+			const json = await response.json();
+	
+			if (response.ok) {
+				setCategory(json);
+				setColor(json.color);
+			}
+		};
 		const fetchCards = async () => {
 			const response = await fetch(
 				API_BASE_URL + "/api/card/category/" + category_id
@@ -37,19 +54,6 @@ const Category = () => {
 
 			if (response.ok) {
 				dispatch({ type: "SET_CARDS", payload: json });
-			}
-		};
-
-		// Why did I fetch the category instead of passing it down?
-		const fetchCategory = async () => {
-			const response = await fetch(
-				API_BASE_URL + "/api/category/" + category_id
-			);
-			const json = await response.json();
-
-			if (response.ok) {
-				setCategory((c) => json);
-				setColor(json.color);
 			}
 		};
 
@@ -88,17 +92,28 @@ const Category = () => {
 		}
 	};
 
+	const handleEditCategory = () => {
+		setEditCategory(true)
+	}
+
 	return (
 		<div>
 			<h2>
-				<span style={{ color: `${color}` }}>{title}</span> Flash Cards
+				{category && <span style={{ color: `${category.color}` }}>{category.title}</span>} Flash Cards 
 			</h2>
 
-			{user && (
+			{user && category && user.email === category.created_by_email && (
 				<button className="delete-button" onClick={handleDelete}>
 					Delete Category{" "}
 				</button>
 			)}
+
+			{user && category && user.email === category.created_by_email && (
+				<button className="edit-button" onClick={handleEditCategory}>
+					Edit Category
+				</button>
+			)}
+
 			{cards && (
 				<Link to={`/test/${title}`}>
 					<span className="test-button">Test Category </span>
@@ -122,6 +137,9 @@ const Category = () => {
 
 				<CardForm category_id={category_id} />
 			</div>
+						{/* Edit Form Modal */}
+			{editCategory && <CategoryEditForm category={category} setCategory={setCategory} editCategory={editCategory} setEditCategory={setEditCategory} />}
+
 			<Modal show={confirm} onHide={handleClose}>
 				<Modal.Header closeButton>
 					<Modal.Title>Are you sure?</Modal.Title>

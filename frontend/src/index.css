@@ -215,6 +215,17 @@ form.login {
   margin: 5px;
 }
 
+.edit-button {
+  background: darkslategray;
+  border: 0;
+  color: #fff;
+  padding: 10px;
+  font-family: "Poppins";
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 5px;
+}
+
 a {
   text-decoration: none;
 }
