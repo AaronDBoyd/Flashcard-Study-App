@@ -1,20 +1,20 @@
 import { useEffect, useState, useCallback } from "react";
 import { useCardContext } from "../hooks/useCardContext";
 import { shuffleArray } from "../helpers/shuffleArray";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import ModalBody from "react-bootstrap/esm/ModalBody";
-import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { API_BASE_URL } from "../config/serverApiConfig";
 
+// components
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import AnswerRevealModal from "../components/AnswerRevealModal";
+
 const Test = () => {
+	// context
 	const { cards } = useCardContext();
 	const { user, dispatch } = useAuthContext();
+
+	// state
 	const [testInput, setTestInput] = useState("");
 	const [testCard, setTestCard] = useState(null);
 	const [showAnswer, setShowAnswer] = useState(false);
@@ -23,11 +23,36 @@ const Test = () => {
 	const [isCorrect, setIsCorrect] = useState(false);
 	const [isMultipleChoice, setIsMultipleChoice] = useState(false);
 	const [multipleAnswerArray, setMultipleAnswerArray] = useState([]);
-	const [referenceAnswerArray, setReferenceAnswerArray] = useState(
-		cards.slice()
-	);
+	const [referenceAnswerArray] = useState(cards.slice());
 
-	const navigate = useNavigate();
+	const assignMultipleAnswerArray = useCallback(() => {
+		let answerArray = [];
+
+		// push current card answer into answerArray
+		answerArray.push(cards[0].answer);
+
+		const min = 0;
+		const max = referenceAnswerArray.length;
+
+		while (
+			answerArray.length < 4 &&
+			answerArray.length < referenceAnswerArray.length
+		) {
+			const randomIndex = Math.floor(Math.random() * (max - min) + min);
+
+			// look at random index in cards array answers
+			if (
+				!answerArray.includes(referenceAnswerArray[randomIndex].answer)
+			) {
+				// push answer into answerArray
+				answerArray.push(referenceAnswerArray[randomIndex].answer);
+			}
+		}
+
+		// shuffle array
+		shuffleArray(answerArray);
+		setMultipleAnswerArray(answerArray);
+	}, [cards, referenceAnswerArray]);
 
 	useEffect(() => {
 		shuffleArray(cards);
@@ -38,7 +63,7 @@ const Test = () => {
 		if (cards[0].multiple_choice) {
 			assignMultipleAnswerArray();
 		}
-	}, [cards]);
+	}, [cards, assignMultipleAnswerArray]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -60,10 +85,6 @@ const Test = () => {
 		if (cards[0].multiple_choice) {
 			assignMultipleAnswerArray();
 		}
-	};
-
-	const handleHome = () => {
-		navigate("/");
 	};
 
 	// add passed card ID to user.passedCards array
@@ -95,34 +116,6 @@ const Test = () => {
 		}
 	};
 
-	const assignMultipleAnswerArray = () => {
-		let answerArray = [];
-		// push current card answer into answerArray
-		answerArray.push(cards[0].answer);
-
-		const min = 1;
-		const max = referenceAnswerArray.length - 1;
-
-		while (
-			answerArray.length < 4 &&
-			answerArray.lenth < referenceAnswerArray.length
-		) {
-			const randomIndex = Math.floor(Math.random() * (max - min) + min);
-
-			// look at random index in cards array answers
-			if (
-				!answerArray.includes(referenceAnswerArray[randomIndex].answer)
-			) {
-				// push answer into answerArray
-				answerArray.push(referenceAnswerArray[randomIndex].answer);
-			}
-		}
-
-		// shuffle array
-		shuffleArray(answerArray);
-		setMultipleAnswerArray(answerArray);
-	};
-
 	return (
 		<div>
 			<div className="test">
@@ -140,7 +133,7 @@ const Test = () => {
 							multipleAnswerArray.map((answer) => (
 								<Form.Check
 									type="radio"
-									key={answer.index}
+									key={multipleAnswerArray.indexOf(answer)}
 									value={answer}
 									label={answer}
 									checked={testInput === { answer }}
@@ -167,54 +160,17 @@ const Test = () => {
 					</Button>
 				</Form>
 			</div>
-			<Modal
-				show={showAnswer}
-				className="test-answer-modal"
-				size="lg"
-				centered="true"
-			>
-				<ModalBody className="text-center my-5">
-					<h3>{testCard && testCard.answer}</h3>
-				</ModalBody>
-				<Modal.Footer>
-					<Container>
-						<Row>
-							<Col xs={9}>
-								<div>
-									{testCard && isCorrect ? (
-										<h3>Correct!</h3>
-									) : (
-										<h3>Incorrect</h3>
-									)}
-								</div>
-							</Col>
-							<Col xs={3}>
-								{currentCardNumber < totalCards ? (
-									<Button
-										className="next-button"
-										variant="info"
-										type="submit"
-										onClick={handleNext}
-										autoFocus
-									>
-										Next
-									</Button>
-								) : (
-									<Button
-										className="next-button"
-										variant="outline-info"
-										type="submit"
-										onClick={handleHome}
-										autoFocus
-									>
-										Go Home
-									</Button>
-								)}
-							</Col>
-						</Row>
-					</Container>
-				</Modal.Footer>
-			</Modal>
+
+			{showAnswer && (
+				<AnswerRevealModal
+					showAnswer={showAnswer}
+					testCard={testCard}
+					isCorrect={isCorrect}
+					currentCardNumber={currentCardNumber}
+					totalCards={totalCards}
+					handleNext={handleNext}
+				/>
+			)}
 		</div>
 	);
 };

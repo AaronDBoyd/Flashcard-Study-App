@@ -22,13 +22,11 @@ function App() {
 	}, [categories]);
 
 	const handleSearch = (e) => {
-		// convert input to lower case
 		const lowerCase = e.target.value.toLowerCase();
-
-		filterCategories(lowerCase);
+		filterCategoriesBySearch(lowerCase);
 	};
 
-	const filterCategories = (input) => {
+	const filterCategoriesBySearch = (input) => {
 		setSearchInput(input);
 
 		if (categories) {
@@ -57,7 +55,7 @@ function App() {
 				<Navbar
 					handleSearch={handleSearch}
 					input={searchInput}
-					resetCategories={filterCategories}
+					resetCategories={filterCategoriesBySearch}
 				/>
 				<div className="pages">
 					<Routes>
