@@ -61,11 +61,11 @@ const Home = ({ categories }) => {
 					publicCategoryIds.includes(c.category_id)
 				);
 				cardDispatch({ type: "SET_CARDS", payload: publicCards });
+				navigate("/test/all");
 			}
 		};
 
-		await fetchAllCards();
-		navigate("/test/all");
+		await fetchAllCards();		
 	};
 
 	return (

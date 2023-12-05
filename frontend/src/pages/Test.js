@@ -1,14 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
-import { useCardContext } from "../hooks/useCardContext";
-import { shuffleArray } from "../helpers/shuffleArray";
 import { useAuthContext } from "../hooks/useAuthContext";
+import { useCardContext } from "../hooks/useCardContext";
+import { useCategoryContext } from "../hooks/useCategoryContext";
+import { shuffleArray } from "../helpers/shuffleArray";
 import { API_BASE_URL } from "../config/serverApiConfig";
 
 // components
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
 import AnswerRevealModal from "../components/AnswerRevealModal";
-import { useCategoryContext } from "../hooks/useCategoryContext";
+import TestQuestionPrompt from "../components/TestQuestionPrompt";
 
 const Test = () => {
 	// context
@@ -148,43 +147,15 @@ const Test = () => {
 							Card {currentCardNumber} of {totalCards}
 						</h4>
 					</div>
-					<div className="test-question">
-						<h2>{testCard && testCard.question}</h2>
-					</div>
 				</div>
-				<Form onSubmit={handleSubmit}>
-					<Form.Group className="mb-3">
-						{isMultipleChoice ? (
-							multipleAnswerArray.map((answer) => (
-								<Form.Check
-									type="radio"
-									autoFocus
-									key={multipleAnswerArray.indexOf(answer)}
-									value={answer}
-									label={answer}
-									checked={submittedInput === { answer }}
-									onChange={() => setSubmittedInput(answer)}
-								/>
-							))
-						) : (
-							<>
-								<Form.Label>Answer</Form.Label>
-								<Form.Control
-									type="text"
-									placeholder="type answer"
-									autoFocus
-									onChange={(e) =>
-										setSubmittedInput(e.target.value)
-									}
-									value={submittedInput}
-								/>
-							</>
-						)}
-					</Form.Group>
-					<Button variant="info" type="submit">
-						Submit
-					</Button>
-				</Form>
+				<TestQuestionPrompt
+					testCard={testCard}
+					isMultipleChoice={isMultipleChoice}
+					multipleAnswerArray={multipleAnswerArray}
+					submittedInput={submittedInput}
+					setSubmittedInput={setSubmittedInput}
+					handleSubmit={handleSubmit}
+				/>
 			</div>
 
 			{showAnswer && (
