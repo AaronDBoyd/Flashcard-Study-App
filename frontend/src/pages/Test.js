@@ -1,8 +1,4 @@
-import {
-	useEffect,
-	useState,
-	useCallback
-} from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useCardContext } from "../hooks/useCardContext";
 import { shuffleArray } from "../helpers/shuffleArray";
 import { useAuthContext } from "../hooks/useAuthContext";
@@ -21,16 +17,16 @@ const Test = () => {
 	const { categories } = useCategoryContext();
 
 	// state
-	const [testInput, setTestInput] = useState("");
+	const [referenceAnswerArray] = useState(cards.slice()); // keep a copy of all cards for multiple choice cards
+	const [totalCards] = useState(cards.length);
+	const [submittedInput, setSubmittedInput] = useState("");
 	const [testCard, setTestCard] = useState(null);
 	const [currentCategory, setCurrentCategory] = useState(null);
 	const [showAnswer, setShowAnswer] = useState(false);
-	const [totalCards] = useState(cards.length);
 	const [currentCardNumber, setCurrentCardNumber] = useState(1);
 	const [isCorrect, setIsCorrect] = useState(false);
 	const [isMultipleChoice, setIsMultipleChoice] = useState(false);
 	const [multipleAnswerArray, setMultipleAnswerArray] = useState([]);
-	const [referenceAnswerArray] = useState(cards.slice());
 
 	const assignMultipleAnswerArray = useCallback(() => {
 		let answerArray = [];
@@ -38,34 +34,37 @@ const Test = () => {
 		// push current card answer into answerArray
 		answerArray.push(cards[0].answer);
 
+		// only select multiple choice options from the same category as the current testCard (when testing multiple categories)
+		const currentCategoryCardArray = referenceAnswerArray.filter(
+			(c) => c.category_id === cards[0].category_id
+		);
 		const min = 0;
-		const max = referenceAnswerArray.length;
+		const max = currentCategoryCardArray.length;
 
 		while (
 			answerArray.length < 4 &&
-			answerArray.length < referenceAnswerArray.length
+			answerArray.length < currentCategoryCardArray.length
 		) {
+			// get random answer from cards array
 			const randomIndex = Math.floor(Math.random() * (max - min) + min);
+			const randomAnswer = currentCategoryCardArray[randomIndex].answer;
 
-			// look at random index in cards array answers
-			if (
-				!answerArray.includes(referenceAnswerArray[randomIndex].answer)
-			) {
+			if (!answerArray.includes(randomAnswer)) {
 				// push answer into answerArray
-				answerArray.push(referenceAnswerArray[randomIndex].answer);
+				answerArray.push(randomAnswer);
 			}
 		}
 
-		// shuffle array
+		// shuffle array so the correct answer is not always first
 		shuffleArray(answerArray);
 		setMultipleAnswerArray(answerArray);
 	}, [cards, referenceAnswerArray]);
 
 	const assignCurrentCategory = useCallback(() => {
 		setCurrentCategory(
-			categories.filter((c) => c._id === testCard.category_id)[0]
+			categories.filter((c) => c._id === cards[0].category_id)[0]
 		);
-	}, [categories, testCard]);
+	}, [categories, cards]);
 
 	useEffect(() => {
 		shuffleArray(cards);
@@ -74,30 +73,24 @@ const Test = () => {
 	useEffect(() => {
 		setTestCard(cards[0]);
 		setIsMultipleChoice(cards[0].multiple_choice);
-
-		if (testCard) {
-			assignCurrentCategory();
-		}
+		assignCurrentCategory();
 
 		if (cards[0].multiple_choice) {
 			assignMultipleAnswerArray();
 		}
-	}, [
-		cards,
-		categories,
-		testCard,
-		assignMultipleAnswerArray,
-		assignCurrentCategory,
-	]);
+	}, [cards, assignMultipleAnswerArray, assignCurrentCategory]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setShowAnswer(true);
-		setTestInput("");
-		if (testCard.answer.toLowerCase() === testInput.toLowerCase() && user) {
+		if (
+			testCard.answer.toLowerCase() === submittedInput.toLowerCase() &&
+			user
+		) {
 			setIsCorrect(true);
 			passCard(testCard._id);
 		}
+		setSubmittedInput("");
 	};
 
 	const handleNext = () => {
@@ -165,11 +158,12 @@ const Test = () => {
 							multipleAnswerArray.map((answer) => (
 								<Form.Check
 									type="radio"
+									autoFocus
 									key={multipleAnswerArray.indexOf(answer)}
 									value={answer}
 									label={answer}
-									checked={testInput === { answer }}
-									onChange={() => setTestInput(answer)}
+									checked={submittedInput === { answer }}
+									onChange={() => setSubmittedInput(answer)}
 								/>
 							))
 						) : (
@@ -180,9 +174,9 @@ const Test = () => {
 									placeholder="type answer"
 									autoFocus
 									onChange={(e) =>
-										setTestInput(e.target.value)
+										setSubmittedInput(e.target.value)
 									}
-									value={testInput}
+									value={submittedInput}
 								/>
 							</>
 						)}
