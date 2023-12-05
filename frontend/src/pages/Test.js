@@ -1,4 +1,8 @@
-import { useEffect, useState, useCallback } from "react";
+import {
+	useEffect,
+	useState,
+	useCallback
+} from "react";
 import { useCardContext } from "../hooks/useCardContext";
 import { shuffleArray } from "../helpers/shuffleArray";
 import { useAuthContext } from "../hooks/useAuthContext";
@@ -8,17 +12,20 @@ import { API_BASE_URL } from "../config/serverApiConfig";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import AnswerRevealModal from "../components/AnswerRevealModal";
+import { useCategoryContext } from "../hooks/useCategoryContext";
 
 const Test = () => {
 	// context
 	const { cards } = useCardContext();
 	const { user, dispatch } = useAuthContext();
+	const { categories } = useCategoryContext();
 
 	// state
 	const [testInput, setTestInput] = useState("");
 	const [testCard, setTestCard] = useState(null);
+	const [currentCategory, setCurrentCategory] = useState(null);
 	const [showAnswer, setShowAnswer] = useState(false);
-	const [totalCards, setTotalCards] = useState(0);
+	const [totalCards] = useState(cards.length);
 	const [currentCardNumber, setCurrentCardNumber] = useState(1);
 	const [isCorrect, setIsCorrect] = useState(false);
 	const [isMultipleChoice, setIsMultipleChoice] = useState(false);
@@ -54,16 +61,34 @@ const Test = () => {
 		setMultipleAnswerArray(answerArray);
 	}, [cards, referenceAnswerArray]);
 
+	const assignCurrentCategory = useCallback(() => {
+		setCurrentCategory(
+			categories.filter((c) => c._id === testCard.category_id)[0]
+		);
+	}, [categories, testCard]);
+
 	useEffect(() => {
 		shuffleArray(cards);
+	}, [cards]);
+
+	useEffect(() => {
 		setTestCard(cards[0]);
-		setTotalCards(cards.length);
 		setIsMultipleChoice(cards[0].multiple_choice);
+
+		if (testCard) {
+			assignCurrentCategory();
+		}
 
 		if (cards[0].multiple_choice) {
 			assignMultipleAnswerArray();
 		}
-	}, [cards, assignMultipleAnswerArray]);
+	}, [
+		cards,
+		categories,
+		testCard,
+		assignMultipleAnswerArray,
+		assignCurrentCategory,
+	]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -119,13 +144,20 @@ const Test = () => {
 	return (
 		<div>
 			<div className="test">
-				<div className="text-end">
-					<h4>
-						Card {currentCardNumber} of {totalCards}
-					</h4>
-				</div>
-				<div className="test-question">
-					<h2>{testCard && testCard.question}</h2>
+				<div>
+					{currentCategory && (
+						<div style={{ color: `${currentCategory.color}` }}>
+							<h4>{currentCategory.title}</h4>
+						</div>
+					)}
+					<div className="text-end">
+						<h4>
+							Card {currentCardNumber} of {totalCards}
+						</h4>
+					</div>
+					<div className="test-question">
+						<h2>{testCard && testCard.question}</h2>
+					</div>
 				</div>
 				<Form onSubmit={handleSubmit}>
 					<Form.Group className="mb-3">

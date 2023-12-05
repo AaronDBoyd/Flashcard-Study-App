@@ -12,7 +12,7 @@ import CategoryEditForm from "../components/CategoryEditForm";
 import DeleteModal from "../components/DeleteModal";
 
 const Category = () => {
-	const { title } = useParams();
+	//const { title } = useParams();
 
 	// context
 	const { user } = useAuthContext();
@@ -105,8 +105,8 @@ const Category = () => {
 				</button>
 			)}
 
-			{cards && (
-				<Link to={`/test/${title}`}>
+			{cards && category && (
+				<Link to={`/test/${category.title}`}>
 					<span className="test-button">Test Category </span>
 				</Link>
 			)}

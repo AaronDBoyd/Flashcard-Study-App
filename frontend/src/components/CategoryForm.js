@@ -48,6 +48,7 @@ const CategoryForm = () => {
 		if (response.ok) {
 			setTitle("");
 			setIsPrivate(false);
+			setIsCustomColor(false)
 			setError(null);
 			setEmptyFields([]);
 			console.log("new category added", json);

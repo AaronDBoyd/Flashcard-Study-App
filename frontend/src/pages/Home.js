@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../config/serverApiConfig";
 import { useCategoryContext } from "../hooks/useCategoryContext";
 import { useCardContext } from "../hooks/useCardContext";
@@ -20,6 +20,8 @@ const Home = ({ categories }) => {
 	// state
 	const [myCategories, setMyCategories] = useState(false);
 
+	const navigate = useNavigate();
+
 	useEffect(() => {
 		const fetchCatgories = async () => {
 			const response = await fetch(API_BASE_URL + "/api/category");
@@ -39,19 +41,48 @@ const Home = ({ categories }) => {
 		setMyCategories((prev) => !prev);
 	};
 
+	const handleTestAll = async () => {
+		const fetchAllCards = async () => {
+			const response = await fetch(API_BASE_URL + "/api/card/");
+			const json = await response.json();
+
+			if (response.ok) {
+				const publicCategoryIds = [];
+				categories
+					.filter(
+						(c) =>
+							!c.isPrivate ||
+							(user && c.created_by_email === user.email)
+					)
+					.map((c) => publicCategoryIds.push(c._id));
+
+				// remove cards from categories that are private
+				const publicCards = json.filter((c) =>
+					publicCategoryIds.includes(c.category_id)
+				);
+				cardDispatch({ type: "SET_CARDS", payload: publicCards });
+			}
+		};
+
+		await fetchAllCards();
+		navigate("/test/all");
+	};
+
 	return (
 		<div>
 			<div style={{ display: "flex", justifyContent: "space-between" }}>
 				<h2>Categories</h2>
-				<FormCheck
+				{ user && <FormCheck
 					type="switch"
 					label="My Categories"
 					value={myCategories}
 					checked={myCategories}
 					onChange={toggleMyCategories}
-				/>
+				/> }
 
-				<button className="btn-outline">Test All Cards</button>
+				<button className="btn-outline" onClick={handleTestAll}>
+					Test All Cards
+				</button>
 			</div>
 			<div className="home">
 				<div className="categories">
