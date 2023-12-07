@@ -24,7 +24,7 @@ const Category = () => {
 	const [confirm, setConfirm] = useState(false);
 	const [color, setColor] = useState("");
 	const [editCategory, setEditCategory] = useState(false);
-	const [passedCardCount, setPassedCardCount] = useState(0)
+	const [passedCardCount, setPassedCardCount] = useState(0);
 
 	const navigate = useNavigate();
 
@@ -57,16 +57,18 @@ const Category = () => {
 		};
 
 		fetchCategory();
-		fetchCards();		
+		fetchCards();
 	}, [category_id, cardDispatch]);
 
-	useEffect(() => {		
+	useEffect(() => {
 		if (cards) {
-			const passed = cards.filter(c => user.passedCardIds.includes(c._id))
+			const passed = cards.filter((c) =>
+				user.passedCardIds.includes(c._id)
+			);
 
-			setPassedCardCount(passed.length)
+			setPassedCardCount(passed.length);
 		}
-	}, [cards, user.passedCardIds])
+	}, [cards, user.passedCardIds]);
 
 	const handleConfirmDelete = async () => {
 		const response = await fetch(
@@ -86,15 +88,22 @@ const Category = () => {
 	};
 
 	const handleReviewPassed = () => {
-		console.log('cards: ', cards)
-		const passedCards = cards.filter(c => user.passedCardIds.includes(c._id))
+		const passedCards = cards.filter((c) =>
+			user.passedCardIds.includes(c._id)
+		);
+		cardDispatch({ type: "SET_CARDS", payload: passedCards });
 
-		console.log('passedCards: ', passedCards)
+		navigate(`/test/${category.title}`);
+	};
 
-		cardDispatch({ type: "SET_CARDS", payload: passedCards})
+	const handleTestRemaining = () => {
+		const remainingCards = cards.filter(
+			(c) => !user.passedCardIds.includes(c._id)
+		);
+		cardDispatch({ type: "SET_CARDS", payload: remainingCards });
 
-		navigate(`/test/${category.title}`)
-	}
+		navigate(`/test/${category.title}`);
+	};
 
 	return (
 		<div>
@@ -106,7 +115,11 @@ const Category = () => {
 				)}{" "}
 				Flash Cards
 			</h2>
-			{ cards && <h3>Passed: {passedCardCount} of {cards.length}</h3>}
+			{cards && (
+				<h3>
+					Passed: {passedCardCount} of {cards.length}
+				</h3>
+			)}
 
 			{user && category && user.email === category.created_by_email && (
 				<button
@@ -126,14 +139,22 @@ const Category = () => {
 				</button>
 			)}
 
-			{cards && passedCardCount > 0 && category && (
+			{cards && cards.length > 0 && category && (
 				<Link to={`/test/${category.title}`}>
 					<button className="test-button">Test Category </button>
 				</Link>
 			)}
 
-			{cards && cards.length > 0 && category && (
-				<button  className="test-button" onClick={handleReviewPassed}>Review Passed Cards</button>
+			{cards && passedCardCount > 0 && category && (
+				<button className="test-button" onClick={handleReviewPassed}>
+					Review Passed Cards
+				</button>
+			)}
+
+			{cards && passedCardCount < cards.length && (
+				<button className="test-button" onClick={handleTestRemaining}>
+					Test Remaining Cards
+				</button>
 			)}
 
 			<div className="cards">
