@@ -1,4 +1,4 @@
-import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../config/serverApiConfig";
 import { useCardContext } from "../hooks/useCardContext";
@@ -16,7 +16,7 @@ const Category = () => {
 
 	// context
 	const { user } = useAuthContext();
-	const { cards, dispatch } = useCardContext();
+	const { cards, dispatch: cardDispatch } = useCardContext();
 	const { dispatch: categoryDispatch } = useCategoryContext();
 
 	// state
@@ -24,6 +24,7 @@ const Category = () => {
 	const [confirm, setConfirm] = useState(false);
 	const [color, setColor] = useState("");
 	const [editCategory, setEditCategory] = useState(false);
+	const [passedCardCount, setPassedCardCount] = useState(0)
 
 	const navigate = useNavigate();
 
@@ -51,13 +52,21 @@ const Category = () => {
 			const json = await response.json();
 
 			if (response.ok) {
-				dispatch({ type: "SET_CARDS", payload: json });
+				cardDispatch({ type: "SET_CARDS", payload: json });
 			}
 		};
 
 		fetchCategory();
-		fetchCards();
-	}, [category_id, dispatch]);
+		fetchCards();		
+	}, [category_id, cardDispatch]);
+
+	useEffect(() => {		
+		if (cards) {
+			const passed = cards.filter(c => user.passedCardIds.includes(c._id))
+
+			setPassedCardCount(passed.length)
+		}
+	}, [cards, user.passedCardIds])
 
 	const handleConfirmDelete = async () => {
 		const response = await fetch(
@@ -76,6 +85,17 @@ const Category = () => {
 		}
 	};
 
+	const handleReviewPassed = () => {
+		console.log('cards: ', cards)
+		const passedCards = cards.filter(c => user.passedCardIds.includes(c._id))
+
+		console.log('passedCards: ', passedCards)
+
+		cardDispatch({ type: "SET_CARDS", payload: passedCards})
+
+		navigate(`/test/${category.title}`)
+	}
+
 	return (
 		<div>
 			<h2>
@@ -86,6 +106,7 @@ const Category = () => {
 				)}{" "}
 				Flash Cards
 			</h2>
+			{ cards && <h3>Passed: {passedCardCount} of {cards.length}</h3>}
 
 			{user && category && user.email === category.created_by_email && (
 				<button
@@ -105,10 +126,14 @@ const Category = () => {
 				</button>
 			)}
 
-			{cards && category && (
+			{cards && passedCardCount > 0 && category && (
 				<Link to={`/test/${category.title}`}>
-					<span className="test-button">Test Category </span>
+					<button className="test-button">Test Category </button>
 				</Link>
+			)}
+
+			{cards && cards.length > 0 && category && (
+				<button  className="test-button" onClick={handleReviewPassed}>Review Passed Cards</button>
 			)}
 
 			<div className="cards">
