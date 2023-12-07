@@ -87,12 +87,6 @@ const createCard = async (req, res) => {
     if(!category_id) {
         emptyFields.push('category_id')
     }
-    // if(!multiple_choice) {
-    //     emptyFields.push('multiple_choice')
-    // }
-    // if(!tags) {
-    //     emptyFields.push('tags')
-    // }
     if(emptyFields.length > 0) {
         return res.status(400).json({ error: 'Please fill in all the fields', emptyFields})
     }
@@ -100,7 +94,7 @@ const createCard = async (req, res) => {
     // increment card count of category
     const category = await Category.findById({_id: category_id})
     const cardCount = category.card_count + 1
-    const updatedCategory = await Category.findByIdAndUpdate({_id: category_id}, {
+    await Category.findByIdAndUpdate({_id: category_id}, {
         card_count: cardCount
     })
 
@@ -149,7 +143,7 @@ const deleteCard = async (req, res) => {
     // decrement card count of category
     const category = await Category.findById({_id: card.category_id})
     const cardCount = category.card_count - 1
-    const updatedCategory = await Category.findByIdAndUpdate({_id: category._id}, {
+    await Category.findByIdAndUpdate({_id: category._id}, {
         card_count: cardCount
     })
 

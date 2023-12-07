@@ -1,4 +1,5 @@
 const User = require('../models/userModel')
+const Card = require('../models/cardModel')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 
@@ -10,14 +11,23 @@ const createToken = (_id) => {
 // login user
 const loginUser = async (req, res) => {
     const {email, password} = req.body
-
+    
     try {
         const user = await User.login(email, password)
 
         // create a token
         const token = createToken(user._id)
 
-        res.status(200).json({email, token, passedCards: user.passedCards})
+        // grab cards that are not deleted for user to test passed cards
+        const livingPassedCardIds = (await Card.find({})).map(c => c._id.toString()).filter(id => user.passedCardIds.includes(id))
+
+        // update users passedCardIds array in db
+        const updatedUser = {email, token, passedCardCount: user.passedCardCount, passedCardIds: livingPassedCardIds}
+        await User.findByIdAndUpdate({_id: user._id}, {
+            ...updatedUser
+        })
+
+        res.status(200).json({email, token, passedCardCount: user.passedCardCount, passedCardIds: livingPassedCardIds})
     } catch (error) {
         res.status(400).json({error: error.message})
     }
@@ -33,7 +43,7 @@ const signupUser = async (req, res) => {
         // create a token
         const token = createToken(user._id)
 
-        res.status(200).json({email, token})
+        res.status(200).json({email, token, passedCardCount: user.passedCardCount, passedCardIds: user.passedCardIds})
     } catch (error) {
         res.status(400).json({error: error.message})
     }

@@ -104,11 +104,12 @@ const Test = () => {
 		}
 	};
 
-	// add passed card ID to user.passedCards array
+	// add passed card ID to user.passedCardIds array
 	const passCard = async (cardId) => {
-		if (!user.passedCards.includes(cardId)) {
+		if (!user.passedCardIds.includes(cardId)) {
 			// add cardId to local instance of user
-			user.passedCards.push(cardId);
+			user.passedCardIds.push(cardId);
+			user.passedCardCount++
 
 			// update user's passedCards array in database
 			const response = await fetch(API_BASE_URL + "/api/user/", {
@@ -124,7 +125,7 @@ const Test = () => {
 				// update authcontext
 				dispatch({
 					type: "PASS_CARD",
-					payload: { passedCards: [...user.passedCards] },
+					payload: user ,
 				});
 
 				// update user in local storage

@@ -38,7 +38,7 @@ const Navbar = ({ handleSearch, input, resetCategories }) => {
 						<div>
 							<span>{user.email}</span>
 							<button onClick={handleClick}>Log out</button>
-							<p>Points: {user.passedCards.length}</p>
+							<p>Points: {user.passedCardCount}</p>
 						</div>
 					)}
 					{!user && (

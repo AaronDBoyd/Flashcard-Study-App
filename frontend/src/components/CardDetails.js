@@ -10,7 +10,7 @@ import DeleteModal from "./DeleteModal";
 const CardDetails = ({ card, color }) => {
 	// context
 	const { dispatch } = useCardContext();
-	const { user } = useAuthContext();
+	const { user, dispatch: authDispatch } = useAuthContext();
 
 	// state
 	const [confirm, setConfirm] = useState(false);
@@ -32,7 +32,32 @@ const CardDetails = ({ card, color }) => {
 		const json = await response.json();
 
 		if (response.ok) {
+			// remove card from card context
 			dispatch({ type: "DELETE_CARD", payload: json });
+
+			// remove deleted card from local storage user
+			user.passedCardIds = user.passedCardIds.filter(c => c !== card._id)
+
+			// update user's passedCardIds array in database
+			const updateResponse = await fetch(API_BASE_URL + "/api/user/", {
+				method: "PATCH",
+				headers: {
+					Authorization: `Bearer ${user.token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(user),
+			});
+
+			if (updateResponse.ok) {
+				// update auth context
+				authDispatch({
+					type: "PASS_CARD",
+					payload: user ,
+				});
+
+				// update user in local storage
+				localStorage.setItem("user", JSON.stringify(user));
+			}
 		}
 
 		setConfirm(false);
