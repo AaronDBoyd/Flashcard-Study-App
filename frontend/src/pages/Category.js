@@ -80,8 +80,15 @@ const Category = () => {
 				},
 			}
 		);
-
+	
 		if (response.ok) {
+			// reduce existing cards in this category to _ids array
+			const cardIds = cards.map((c) => c._id)
+			// remove cards from user's passedCardIds array
+			user.passedCardIds = user.passedCardIds.filter(c => !cardIds.includes(c))
+			// save the user to local storage
+			localStorage.setItem("user", JSON.stringify(user));
+
 			await categoryDispatch({ type: "SET_CATEGORIES", payload: null });
 			navigate("/");
 		}

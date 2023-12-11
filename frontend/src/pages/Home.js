@@ -60,8 +60,14 @@ const Home = ({ categories }) => {
 				const publicCards = json.filter((c) =>
 					publicCategoryIds.includes(c.category_id)
 				);
-				cardDispatch({ type: "SET_CARDS", payload: publicCards });
-				navigate("/test/all");
+
+				if (publicCards.length > 0) {
+					cardDispatch({ type: "SET_CARDS", payload: publicCards });
+					navigate("/test/all");
+				} 
+				// else {
+				// 	show message to create cards before testing
+				// }
 			}
 		};
 
