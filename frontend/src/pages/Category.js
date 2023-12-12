@@ -6,10 +6,10 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import { useCategoryContext } from "../hooks/useCategoryContext";
 
 // components
-import CardDetails from "../components/CardDetails";
-import CardForm from "../components/CardForm";
 import CategoryEditForm from "../components/CategoryEditForm";
+import CardForm from "../components/CardForm";
 import DeleteModal from "../components/DeleteModal";
+import PaginatedCards from "../components/PaginatedCards";
 
 const Category = () => {
 	//const { title } = useParams();
@@ -80,12 +80,14 @@ const Category = () => {
 				},
 			}
 		);
-	
+
 		if (response.ok) {
 			// reduce existing cards in this category to _ids array
-			const cardIds = cards.map((c) => c._id)
+			const cardIds = cards.map((c) => c._id);
 			// remove cards from user's passedCardIds array
-			user.passedCardIds = user.passedCardIds.filter(c => !cardIds.includes(c))
+			user.passedCardIds = user.passedCardIds.filter(
+				(c) => !cardIds.includes(c)
+			);
 			// save the user to local storage
 			localStorage.setItem("user", JSON.stringify(user));
 
@@ -164,23 +166,18 @@ const Category = () => {
 				</button>
 			)}
 
-			<div className="cards">
-				<div>
-					{cards &&
-						cards.map((card) => (
-							<CardDetails
-								key={card._id}
-								card={card}
-								color={color}
-							/>
-						))}
-					{!cards && (
-						<h3>Use form to add flash cards to this category.</h3>
-					)}
-				</div>
-
+			<div
+				style={{
+					display: "grid",
+					gridTemplateColumns: "5fr 3fr",
+					gap: '100px'
+					
+				}}
+			>
+				<PaginatedCards color={color} />
 				<CardForm category_id={category_id} />
 			</div>
+
 			{/* Edit Form Modal */}
 			{editCategory && (
 				<CategoryEditForm

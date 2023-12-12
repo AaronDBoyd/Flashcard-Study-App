@@ -86,11 +86,11 @@ header a {
 }
 
 /* cards list */
-.cards {
+/* .cards {
   display: grid;
   grid-template-columns: 3fr 1fr;
   gap: 100px;
-}
+} */
 
 .card-details {
   background: #fff;
