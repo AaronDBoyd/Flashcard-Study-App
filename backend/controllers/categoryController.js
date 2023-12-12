@@ -7,7 +7,9 @@ const Log = require('../../helpers/Logger')
 
 // get all categories
 const getCategories = async (req, res) => {
-    const categories = await Category.find().sort({createdAt: -1})
+    const categories = await Category.find().sort({title: 1})
+
+    //const categories = await Category.find().sort({createdAt: -1})
 
     res.status(200).json(categories)
 }

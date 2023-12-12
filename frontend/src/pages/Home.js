@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../config/serverApiConfig";
 import { useCategoryContext } from "../hooks/useCategoryContext";
@@ -11,16 +11,41 @@ import CategoryDetails from "../components/CategoryDetails";
 import CategoryForm from "../components/CategoryForm";
 
 // possibly change to Categories
-const Home = ({ categories }) => {
+const Home = () => {
 	// context
 	const { user } = useAuthContext();
-	const { dispatch } = useCategoryContext();
+	const { categories, dispatch: categoryDispatch } = useCategoryContext();
 	const { dispatch: cardDispatch } = useCardContext();
 
 	// state
 	const [myCategories, setMyCategories] = useState(false);
+	const [currentCategories, setCurrentCategories] = useState(null); // All or MY categories
+	const [filteredCategories, setFilteredCategories] = useState(null); // filter with Search
+	const [searchInput, setSearchInput] = useState("");
 
 	const navigate = useNavigate();
+
+	const assignCategories = useCallback(
+		(showMine) => {
+			const catArray = showMine
+				? categories.filter((c) => c.created_by_email === user.email)
+				: categories.filter(
+						(category) =>
+							!category.isPrivate ||
+							(user && category.created_by_email === user.email)
+				  );
+
+			setCurrentCategories(catArray);
+			setFilteredCategories(catArray);
+		},
+		[categories, user]
+	);
+
+	useEffect(() => {
+		if (categories) {
+			assignCategories(myCategories);
+		}
+	}, [categories, myCategories, assignCategories]);
 
 	useEffect(() => {
 		const fetchCatgories = async () => {
@@ -28,17 +53,18 @@ const Home = ({ categories }) => {
 			const json = await response.json();
 
 			if (response.ok) {
-				dispatch({ type: "SET_CATEGORIES", payload: json });
+				categoryDispatch({ type: "SET_CATEGORIES", payload: json });
 			}
 		};
 
 		cardDispatch({ type: "SET_CARDS", payload: null });
 
 		fetchCatgories();
-	}, [dispatch, cardDispatch]);
+	}, [categoryDispatch, cardDispatch]);
 
 	const toggleMyCategories = () => {
 		setMyCategories((prev) => !prev);
+		setSearchInput("");
 	};
 
 	const handleTestAll = async () => {
@@ -64,27 +90,54 @@ const Home = ({ categories }) => {
 				if (publicCards.length > 0) {
 					cardDispatch({ type: "SET_CARDS", payload: publicCards });
 					navigate("/test/all");
-				} 
+				}
 				// else {
 				// 	show message to create cards before testing
 				// }
 			}
 		};
 
-		await fetchAllCards();		
+		await fetchAllCards();
+	};
+
+	const handleSearch = (e) => {
+		setSearchInput(e.target.value);
+		const lowerCase = e.target.value.toLowerCase();
+
+		// if no input, return all categories
+		const filteredData = currentCategories.filter((category) => {
+			if (lowerCase === "") {
+				return category;
+			}
+			// return categories that contain the input sub string
+			else {
+				return category.title.toLowerCase().includes(lowerCase);
+			}
+		});
+
+		setFilteredCategories(filteredData);
 	};
 
 	return (
 		<div>
 			<div style={{ display: "flex", justifyContent: "space-between" }}>
 				<h2>Categories</h2>
-				{ user && <FormCheck
-					type="switch"
-					label="My Categories"
-					value={myCategories}
-					checked={myCategories}
-					onChange={toggleMyCategories}
-				/> }
+				<div>
+					<input
+						placeholder="search"
+						value={searchInput}
+						onChange={handleSearch}
+					/>
+				</div>
+				{user && (
+					<FormCheck
+						type="switch"
+						label="My Categories"
+						value={myCategories}
+						checked={myCategories}
+						onChange={toggleMyCategories}
+					/>
+				)}
 
 				<button className="btn-outline" onClick={handleTestAll}>
 					Test All Cards
@@ -94,49 +147,21 @@ const Home = ({ categories }) => {
 				<div className="categories">
 					{/* if myCategories NOT toggled (default) show all, 
 					else only show users categories */}
-					{!myCategories
-						? categories &&
-						  categories
-								.filter(
-									(category) =>
-										!category.isPrivate ||
-										(user &&
-											category.created_by_email ===
-												user.email)
-								)
-								.map((category) => (
-									<Link
-										to={`/category/${category.title}`}
-										key={category._id}
-										state={{
-											category_id: `${category._id}`,
-										}}
-									>
-										<CategoryDetails
-											category={category}
-											key={category._id}
-										/>
-									</Link>
-								))
-						: categories &&
-						  categories
-								.filter(
-									(c) => c.created_by_email === user.email
-								)
-								.map((category) => (
-									<Link
-										to={`/category/${category.title}`}
-										key={category._id}
-										state={{
-											category_id: `${category._id}`,
-										}}
-									>
-										<CategoryDetails
-											category={category}
-											key={category._id}
-										/>
-									</Link>
-								))}
+					{filteredCategories &&
+						filteredCategories.map((category) => (
+							<Link
+								to={`/category/${category.title}`}
+								key={category._id}
+								state={{
+									category_id: `${category._id}`,
+								}}
+							>
+								<CategoryDetails
+									category={category}
+									key={category._id}
+								/>
+							</Link>
+						))}
 				</div>
 				<CategoryForm />
 			</div>
