@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../config/serverApiConfig";
 import { useCategoryContext } from "../hooks/useCategoryContext";
 import { useCardContext } from "../hooks/useCardContext";
@@ -7,8 +7,8 @@ import { useAuthContext } from "../hooks/useAuthContext";
 
 // components
 import FormCheck from "react-bootstrap/FormCheck";
-import CategoryDetails from "../components/CategoryDetails";
 import CategoryForm from "../components/CategoryForm";
+import PaginatedCategories from "../components/PaginatedCategories";
 
 // possibly change to Categories
 const Home = () => {
@@ -144,25 +144,7 @@ const Home = () => {
 				</button>
 			</div>
 			<div className="home">
-				<div className="categories">
-					{/* if myCategories NOT toggled (default) show all, 
-					else only show users categories */}
-					{filteredCategories &&
-						filteredCategories.map((category) => (
-							<Link
-								to={`/category/${category.title}`}
-								key={category._id}
-								state={{
-									category_id: `${category._id}`,
-								}}
-							>
-								<CategoryDetails
-									category={category}
-									key={category._id}
-								/>
-							</Link>
-						))}
-				</div>
+				<PaginatedCategories filteredCategories={filteredCategories}/>
 				<CategoryForm />
 			</div>
 		</div>
