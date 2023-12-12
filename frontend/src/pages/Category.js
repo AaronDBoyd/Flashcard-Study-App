@@ -1,4 +1,4 @@
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../config/serverApiConfig";
 import { useCardContext } from "../hooks/useCardContext";
@@ -10,10 +10,9 @@ import CategoryEditForm from "../components/CategoryEditForm";
 import CardForm from "../components/CardForm";
 import DeleteModal from "../components/DeleteModal";
 import PaginatedCards from "../components/PaginatedCards";
+import TestCategoryDropdown from "../components/TestCategoryDropdown";
 
 const Category = () => {
-	//const { title } = useParams();
-
 	// context
 	const { user } = useAuthContext();
 	const { cards, dispatch: cardDispatch } = useCardContext();
@@ -96,24 +95,6 @@ const Category = () => {
 		}
 	};
 
-	const handleReviewPassed = () => {
-		const passedCards = cards.filter((c) =>
-			user.passedCardIds.includes(c._id)
-		);
-		cardDispatch({ type: "SET_CARDS", payload: passedCards });
-
-		navigate(`/test/${category.title}`);
-	};
-
-	const handleTestRemaining = () => {
-		const remainingCards = cards.filter(
-			(c) => !user.passedCardIds.includes(c._id)
-		);
-		cardDispatch({ type: "SET_CARDS", payload: remainingCards });
-
-		navigate(`/test/${category.title}`);
-	};
-
 	return (
 		<div>
 			<h2>
@@ -148,30 +129,18 @@ const Category = () => {
 				</button>
 			)}
 
-			{cards && cards.length > 0 && category && (
-				<Link to={`/test/${category.title}`}>
-					<button className="test-button">Test Category </button>
-				</Link>
-			)}
-
-			{cards && passedCardCount > 0 && category && (
-				<button className="test-button" onClick={handleReviewPassed}>
-					Review Passed Cards
-				</button>
-			)}
-
-			{cards && passedCardCount < cards.length && (
-				<button className="test-button" onClick={handleTestRemaining}>
-					Test Remaining Cards
-				</button>
+			{cards && (
+				<TestCategoryDropdown
+					category={category}
+					passedCardCount={passedCardCount}
+				/>
 			)}
 
 			<div
 				style={{
 					display: "grid",
 					gridTemplateColumns: "5fr 3fr",
-					gap: '100px'
-					
+					gap: "100px",
 				}}
 			>
 				<PaginatedCards color={color} />
