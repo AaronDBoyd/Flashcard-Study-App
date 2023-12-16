@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { usePagination } from "../hooks/usePagination"
-import { Link } from 'react-router-dom'
+import { usePagination } from "../hooks/usePagination";
+import { Link } from "react-router-dom";
 
 // components
-import Pagination from '@mui/material/Pagination';
+import Pagination from "@mui/material/Pagination";
 import CategoryDetails from "../components/CategoryDetails";
 
-const PaginatedCategories = ({filteredCategories}) => {
+const PaginatedCategories = ({ filteredCategories }) => {
 	const [page, setPage] = useState(1);
-	const PER_PAGE = 10;
+	const PER_PAGE = 12;
 
 	const count = filteredCategories
 		? Math.ceil(filteredCategories.length / PER_PAGE)
@@ -41,13 +41,21 @@ const PaginatedCategories = ({filteredCategories}) => {
 						</Link>
 					))}
 			</div>
-			<Pagination
-				count={count}
-				page={page}
-				variant="outlined"
-				color="secondary"
-				onChange={handleChangePage}
-			/>
+			<div className="categories-pagination">
+				<Pagination
+					count={count}
+					page={page}
+					sx={{
+						"& .MuiPaginationItem-root": {
+							color: "#fff",
+						},
+						"& .Mui-selected": {
+							background: "#841e62",
+						},
+					}}
+					onChange={handleChangePage}
+				/>
+			</div>
 		</div>
 	);
 };

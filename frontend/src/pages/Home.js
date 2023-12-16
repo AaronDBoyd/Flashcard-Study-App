@@ -9,6 +9,8 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import FormCheck from "react-bootstrap/FormCheck";
 import CategoryForm from "../components/CategoryForm";
 import PaginatedCategories from "../components/PaginatedCategories";
+import { IconButton, Tooltip } from "@mui/material";
+import { AddCircle } from "@mui/icons-material";
 
 // possibly change to Categories
 const Home = () => {
@@ -22,6 +24,7 @@ const Home = () => {
 	const [currentCategories, setCurrentCategories] = useState(null); // All or MY categories
 	const [filteredCategories, setFilteredCategories] = useState(null); // filter with Search
 	const [searchInput, setSearchInput] = useState("");
+	const [addNew, setAddNew] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -120,8 +123,46 @@ const Home = () => {
 
 	return (
 		<div>
-			<div style={{ display: "flex", justifyContent: "space-between" }}>
-				<h2>Categories</h2>
+			<div className="home-header">
+				<div style={{}}>
+					<h2>Categories</h2>
+
+					{user && (
+						<FormCheck
+							type="switch"
+							label="My Categories"
+							value={myCategories}
+							checked={myCategories}
+							onChange={toggleMyCategories}
+						/>
+					)}
+				</div>
+
+				<IconButton
+					className="new-cat-button"
+					onClick={() => setAddNew(true)}
+				>
+					<Tooltip
+						title={
+							user ? (
+								<h6>CREATE CATEGORY</h6>
+							) : (
+								<h6>LOGIN TO CREATE CATEGORY</h6>
+							)
+						}
+						placement="top"
+					>
+						<AddCircle
+							sx={{
+								width: 60,
+								height: 60,
+								marginTop: "-80px",
+								color: "#841e62",
+							}}
+						/>
+					</Tooltip>
+				</IconButton>
+
 				<div>
 					<input
 						placeholder="search"
@@ -129,23 +170,16 @@ const Home = () => {
 						onChange={handleSearch}
 					/>
 				</div>
-				{user && (
-					<FormCheck
-						type="switch"
-						label="My Categories"
-						value={myCategories}
-						checked={myCategories}
-						onChange={toggleMyCategories}
-					/>
-				)}
 
-				<button className="btn-outline" onClick={handleTestAll}>
+				{/* <button className="btn-outline" onClick={handleTestAll}>
 					Test All Cards
-				</button>
+				</button> */}
 			</div>
 			<div className="home">
-				<PaginatedCategories filteredCategories={filteredCategories}/>
-				<CategoryForm />
+				<PaginatedCategories filteredCategories={filteredCategories} />
+				{user && addNew && (
+					<CategoryForm addNew={addNew} setAddNew={setAddNew} />
+				)}
 			</div>
 		</div>
 	);

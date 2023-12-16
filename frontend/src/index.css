@@ -3,32 +3,57 @@
 
 /* layout */
 :root {
-  --primary: #1aac83;
+  /* --primary: #1aac83; */
+  --primary: #ab21eb;
   --error: #e7195a;
+
+  --light-text: whitesmoke;
+  --grey-text: #555;
+
+  --medium-gray-background: #6b6b6b;
+
+
+  --oracle-turquoise: #346b6d;
+  --rhino-blue: #2a445e;
+  --maroon: #58094f;
 }
 
 body {
-  background: #f1f1f1;
+  /* background: #6b6b6b; */
+  background: linear-gradient(#222222, #6b6b6b );
   margin: 0;
-  font-family: "Poppins"
+  font-family: "Poppins";
+  height: 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 header {
-  background: #fff;
+  /* background: var(--maroon); */
+  /* background: #841e62; */
+  /* background: linear-gradient(0.25turn, #58094f, #841); */
+  background: linear-gradient(0.25turn, #58094f, #841e62);
+  color: whitesmoke;
 }
 
 header .container {
   max-width: 1400px;
+  height: 150px; 
   margin: 0 auto;
-  padding: 10px 20px;
+  padding: 10px 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 header a {
-  color: #333;
+  color: whitesmoke;
   text-decoration: none;
+}
+
+header h1 {
+  font-size: 62px;
+  font-weight: 400;
 }
 
 .pages {
@@ -39,14 +64,30 @@ header a {
 
 /* homepage/categories */
 .home {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  gap: 100px;
+  padding: 0 80px;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  color: whitesmoke;
+  padding: 30px 260px;
+  height: 180px;
+  margin-bottom: -50px;
+
+}
+
+.new-cat-button {
+  transition: transform .5s;
+}
+.new-cat-button:hover {
+  transform: scale(1.1)
 }
 
 .categories {
   display: flex;
   flex-wrap: wrap;
+  color: whitesmoke;
 }
 
 .categories a {
@@ -54,13 +95,20 @@ header a {
 }
 
 .category-details {
-  background: #fff;
+  
+  /* background: #535353; */
+  background: #ffffffee;
   width: 250px;
   border-radius: 4px;
+  border-width: 6px;
   margin: 20px;
   padding: 20px;
   position: relative;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05)
+  transition: transform .5s;
+}
+
+.category-details:hover {
+  transform: scale(1.1);
 }
 
 .category-details h4 {
@@ -71,7 +119,7 @@ header a {
 .category-details p {
   margin: 0;
   font-size: 0.9em;
-  color: #555;
+  color:#555;
 }
 
 .category-details span {
@@ -83,6 +131,20 @@ header a {
   padding: 6px;
   border-radius: 50%;
   color: #333;
+}
+
+.category-form {
+  /* max-width: 400px; */
+  width: 400px;
+  margin: 20px auto auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 4px;
+}
+
+.categories-pagination {
+  display: flex;
+  justify-content: center;
 }
 
 /* cards list */
@@ -133,7 +195,7 @@ input {
 }
 
 form button {
-  background: var(--primary);
+  /* background: var(--primary); */
   border: 0;
   color: #fff;
   padding: 10px;
@@ -173,14 +235,23 @@ nav button {
 }
 
 nav button {
-  background: #fff;
-  color: var(--primary);
-  border: 2px solid var(--primary);
+  
+  color: whitesmoke;
+  background: #841e62;
+  
   padding: 6px 10px;
+  border: 2px solid;
   border-radius: 4px;
   font-family: "Poppins";
   cursor: pointer;
   font-size: 1em;
+}
+
+.title-button {
+  transition: transform .5s;
+}
+.title-button:hover {
+  transform: rotate(0.01turn);
 }
 
 /* auth forms */
@@ -194,7 +265,7 @@ form.login {
 }
 
 .test-button {
-  background: var(--primary);
+  /* background: var(--primary); */
   border: 0;
   color: #fff;
   padding: 10px;

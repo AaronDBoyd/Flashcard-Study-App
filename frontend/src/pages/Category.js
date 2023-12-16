@@ -60,14 +60,14 @@ const Category = () => {
 	}, [category_id, cardDispatch]);
 
 	useEffect(() => {
-		if (cards) {
+		if (cards && user) {
 			const passed = cards.filter((c) =>
 				user.passedCardIds.includes(c._id)
 			);
 
 			setPassedCardCount(passed.length);
 		}
-	}, [cards, user.passedCardIds]);
+	}, [cards, user]);
 
 	const handleConfirmDelete = async () => {
 		const response = await fetch(
@@ -96,7 +96,7 @@ const Category = () => {
 	};
 
 	return (
-		<div>
+		<div style={{color: 'whitesmoke'}}>
 			<h2>
 				{category && (
 					<span style={{ color: `${category.color}` }}>

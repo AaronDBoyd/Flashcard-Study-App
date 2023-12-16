@@ -4,7 +4,7 @@ import formatDistanceFromNow from 'date-fns/formatDistanceToNow'
 const CategoryDetails = ({ category }) => {
 
     return (
-        <div className="category-details">
+        <div className="category-details" style={{boxShadow: `2px 2px 5px ${category.color}`}}>
             <div style={{color: `${category.color}`}}>
                 <h4>{category.title}</h4>
             </div>

@@ -3,9 +3,16 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import { useCategoryContext } from "../hooks/useCategoryContext";
 import { API_BASE_URL } from "../config/serverApiConfig";
 import { useToken } from "../hooks/useToken";
-import { SketchPicker } from "react-color";
+import { BlockPicker, SketchPicker } from "react-color";
+import {
+	FormControlLabel,
+	Checkbox,
+	Button,
+	TextField,
+	Modal,
+} from "@mui/material";
 
-const CategoryForm = () => {
+const CategoryForm = ({ addNew, setAddNew }) => {
 	const { dispatch } = useCategoryContext();
 	const { user } = useAuthContext();
 	const { resetToken } = useToken();
@@ -14,7 +21,7 @@ const CategoryForm = () => {
 	const [error, setError] = useState(null);
 	const [emptyFields, setEmptyFields] = useState([]);
 	const [isCustomColor, setIsCustomColor] = useState(false);
-	const [color, setColor] = useState("#1aac83");
+	const [color, setColor] = useState("#841e62");
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -48,9 +55,10 @@ const CategoryForm = () => {
 		if (response.ok) {
 			setTitle("");
 			setIsPrivate(false);
-			setIsCustomColor(false)
+			setIsCustomColor(false);
 			setError(null);
 			setEmptyFields([]);
+			setAddNew(false);
 			console.log("new category added", json);
 			dispatch({ type: "CREATE_CATEGORY", payload: json });
 		}
@@ -61,69 +69,75 @@ const CategoryForm = () => {
 	};
 
 	return (
-		<form className="create" onSubmit={handleSubmit}>
-			<h3> Add a New Category</h3>
-
-			<label>Category Title:</label>
-			<input
-				type="text"
-				onChange={(e) => setTitle(e.target.value)}
-				value={title}
-				className={emptyFields.includes("title") ? "error" : ""}
-			/>
-
-			{/* private field */}
-			<div
-				className="checkbox-wrapper"
-				style={{
-					display: "flex",
-					justifyContent: "flex-start",
-					width: "200px",
-					marginLeft: "-40px",
-					height: "70px",
-					fontSize: "20px",
-				}}
-			>
-				<input
-					type="checkbox"
-					value={isPrivate}
-					checked={isPrivate}
-					onChange={(e) => setIsPrivate((prev) => !prev)}
+		<Modal open={addNew} onClose={() => setAddNew(false)}>
+			<form className="category-form" onSubmit={handleSubmit}>
+				<h3> Add a New Category</h3>
+				<TextField
+					label="Category Title"
+					fullWidth
+					color="secondary"
+					onChange={(e) => setTitle(e.target.value)}
+					value={title}
+					className={emptyFields.includes("title") ? "error" : ""}
 				/>
-				<label>Private</label>
-			</div>
-
-			{/* color */}
-			<label>Color:</label>
-			<br />
-			<div
-				className="checkbox-wrapper"
-				style={{
-					display: "flex",
-					justifyContent: "flex-start",
-					width: "200px",
-					marginLeft: "-20px",
-				}}
-			>
-				<input
-					type="checkbox"
-					value={isCustomColor}
-					checked={isCustomColor}
-					onChange={(e) => setIsCustomColor((prev) => !prev)}
+				<br />
+				<FormControlLabel
+					control={
+						<Checkbox
+							size="large"
+							value={isPrivate}
+							checked={isPrivate}
+							onChange={(e) => setIsPrivate((prev) => !prev)}
+						/>
+					}
+					label="Private"
 				/>
-				<label>Check for custom color</label>
-			</div>
-
-			{isCustomColor && (
-				<SketchPicker
-					color={color}
-					onChangeComplete={handleChangeColor}
+				<br />
+				<FormControlLabel
+					control={
+						<Checkbox
+							size="large"
+							value={isCustomColor}
+							checked={isCustomColor}
+							onChange={(e) => setIsCustomColor((prev) => !prev)}
+						/>
+					}
+					label="Custom Color"
 				/>
-			)}
-			<br />
-			<button>Add Category</button>
-			{error && <div className="error">{error}</div>}
-		</form>
+
+				{isCustomColor && (
+					<BlockPicker
+						color={color}
+						onChangeComplete={handleChangeColor}
+						colors={[
+							"#F47373",
+							"#697689",
+							"#37D67A",
+							"#2CCCE4",
+							"#555555",
+							"#ff8a65",
+							"#ba68c8",
+							"#58094F",
+							"#841E62",
+							"#F3AA20",
+							"#2A445E",
+							"#346B6D",
+							"#5809",
+						]}
+					/>
+				)}
+				<br />
+				<Button
+					type="submit"
+					variant="contained"
+					color="secondary"
+					// sx={{ backgroundColor: "#841e62" }}
+				>
+					Add Category
+				</Button>
+				{error && <div className="error">{error}</div>}
+			</form>
+		</Modal>
 	);
 };
 
