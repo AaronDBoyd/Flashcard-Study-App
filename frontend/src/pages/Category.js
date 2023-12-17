@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../config/serverApiConfig";
 import { useCardContext } from "../hooks/useCardContext";
@@ -15,10 +15,12 @@ import { IconButton, Tooltip } from "@mui/material";
 import { AddCircle } from "@mui/icons-material";
 
 const Category = () => {
+	// grab category from title instead of category_id in order to navigate back to category from test
+	//const { title } = useParams();
 	// context
 	const { user } = useAuthContext();
 	const { cards, dispatch: cardDispatch } = useCardContext();
-	const { dispatch: categoryDispatch } = useCategoryContext();
+	const { categories, dispatch: categoryDispatch } = useCategoryContext();
 
 	// state
 	const [category, setCategory] = useState(null);
@@ -58,6 +60,8 @@ const Category = () => {
 			}
 		};
 
+		// setCategory(categories.filter(c => c.title === title)[0])
+		// setColor(category.color)
 		fetchCategory();
 		fetchCards();
 	}, [category_id, cardDispatch]);
@@ -128,6 +132,7 @@ const Category = () => {
 								width: 60,
 								height: 60,
 								marginTop: "-40px",
+								marginRight: '40px',
 								color: "#841e62",
 							}}
 						/>
@@ -140,7 +145,7 @@ const Category = () => {
 				)}
 			</div>
 
-			<div style={{ display: 'flex', marginLeft: '20px'}}>
+			<div style={{ display: 'flex', justifyContent: 'center'}}>
 				{user &&
 					category &&
 					user.email === category.created_by_email && (

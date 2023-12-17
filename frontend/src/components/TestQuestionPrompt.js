@@ -6,16 +6,18 @@ const TestQuestionPrompt = ({
 	isMultipleChoice,
 	multipleAnswerArray,
 	submittedInput,
-    setSubmittedInput,
-    handleSubmit
+	setSubmittedInput,
+	handleSubmit,
+	category,
 }) => {
-
-    
-
 	return (
 		<>
 			<div className="test-question">
-				<h2>{testCard && testCard.question}</h2>
+				{category && (
+					<h2 style={{ color: `${category.color}` }}>
+						{testCard && testCard.question}
+					</h2>
+				)}
 			</div>
 			<Form onSubmit={handleSubmit}>
 				<Form.Group className="mb-3">
@@ -46,9 +48,15 @@ const TestQuestionPrompt = ({
 						</>
 					)}
 				</Form.Group>
-				<Button variant="info" type="submit">
-					Submit
-				</Button>
+				{category && (
+					<Button
+						style={{ background: `${category.color}` }}
+						variant="light"
+						type="submit"
+					>
+						Submit
+					</Button>
+				)}
 			</Form>
 		</>
 	);

@@ -12,12 +12,12 @@ const AnswerRevealModal = ({
 	showAnswer,
 	testCard,
 	isCorrect,
-    currentCardNumber,
+	currentCardNumber,
 	totalCards,
 	handleNext,
+	category,
 }) => {
-
-    const navigate = useNavigate();
+	const navigate = useNavigate();
 
 	return (
 		<Modal
@@ -32,7 +32,7 @@ const AnswerRevealModal = ({
 			<Modal.Footer>
 				<Container>
 					<Row>
-						<Col xs={9}>
+						<Col xs={8}>
 							<div>
 								{testCard && isCorrect ? (
 									<h3>Correct!</h3>
@@ -41,11 +41,15 @@ const AnswerRevealModal = ({
 								)}
 							</div>
 						</Col>
-						<Col xs={3}>
+						<Col xs={4}>
 							{currentCardNumber < totalCards ? (
 								<Button
 									className="next-button"
-									variant="info"
+									style={{
+										background: `${category.color}`,
+										marginLeft: "150px",
+									}}
+									variant="light"
 									type="submit"
 									onClick={handleNext}
 									autoFocus
@@ -53,15 +57,37 @@ const AnswerRevealModal = ({
 									Next
 								</Button>
 							) : (
-								<Button
-									className="next-button"
-									variant="outline-info"
-									type="submit"
-									onClick={() => navigate("/")}
-									autoFocus
-								>
-									Go Home
-								</Button>
+								<>
+									{/* <Button
+										className="next-button"
+										style={{
+											background: `${category.color}`,
+											margin: "0 10px",
+										}}
+										variant="light"
+										type="submit"
+										onClick={() =>
+											navigate(
+												`/category/${category.title}`
+											)
+										}
+										autoFocus
+									>
+										Back to {category.title}
+									</Button> */}
+									<Button
+										className="next-button"
+										style={{
+											background: "#841e62",
+										}}
+										variant="outline-light"
+										type="submit"
+										onClick={() => navigate("/")}
+										autoFocus
+									>
+										Go Home
+									</Button>
+								</>
 							)}
 						</Col>
 					</Row>

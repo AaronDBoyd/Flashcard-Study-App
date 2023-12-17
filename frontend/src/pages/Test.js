@@ -109,7 +109,7 @@ const Test = () => {
 		if (!user.passedCardIds.includes(cardId)) {
 			// add cardId to local instance of user
 			user.passedCardIds.push(cardId);
-			user.passedCardCount++
+			user.passedCardCount++;
 
 			// update user's passedCards array in database
 			const response = await fetch(API_BASE_URL + "/api/user/", {
@@ -125,7 +125,7 @@ const Test = () => {
 				// update authcontext
 				dispatch({
 					type: "PASS_CARD",
-					payload: user ,
+					payload: user,
 				});
 
 				// update user in local storage
@@ -143,20 +143,23 @@ const Test = () => {
 							<h4>{currentCategory.title}</h4>
 						</div>
 					)}
-					<div className="text-end">
-						<h4>
-							Card {currentCardNumber} of {totalCards}
-						</h4>
+					<div className="test-prompt">
+						<div className="text-end">
+							<h4>
+								Card {currentCardNumber} of {totalCards}
+							</h4>
+						</div>
+						<TestQuestionPrompt
+							testCard={testCard}
+							isMultipleChoice={isMultipleChoice}
+							multipleAnswerArray={multipleAnswerArray}
+							submittedInput={submittedInput}
+							setSubmittedInput={setSubmittedInput}
+							handleSubmit={handleSubmit}
+							category={currentCategory}
+						/>
 					</div>
 				</div>
-				<TestQuestionPrompt
-					testCard={testCard}
-					isMultipleChoice={isMultipleChoice}
-					multipleAnswerArray={multipleAnswerArray}
-					submittedInput={submittedInput}
-					setSubmittedInput={setSubmittedInput}
-					handleSubmit={handleSubmit}
-				/>
 			</div>
 
 			{showAnswer && (
@@ -167,6 +170,7 @@ const Test = () => {
 					currentCardNumber={currentCardNumber}
 					totalCards={totalCards}
 					handleNext={handleNext}
+					category={currentCategory}
 				/>
 			)}
 		</div>
