@@ -113,8 +113,7 @@ const CategoryForm = ({ addNew, setAddNew }) => {
 							"#F47373",
 							"#697689",
 							"#37D67A",
-							"#2CCCE4",
-							"#555555",
+							"#2CCCE4",					
 							"#ff8a65",
 							"#ba68c8",
 							"#58094F",
@@ -122,7 +121,7 @@ const CategoryForm = ({ addNew, setAddNew }) => {
 							"#F3AA20",
 							"#2A445E",
 							"#346B6D",
-							"#5809",
+							"#558800"
 						]}
 					/>
 				)}
