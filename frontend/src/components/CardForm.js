@@ -3,8 +3,10 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import { useCardContext } from "../hooks/useCardContext";
 import { API_BASE_URL } from "../config/serverApiConfig";
 import { useToken } from "../hooks/useToken";
+import { FormControlLabel, Modal } from "@mui/material";
+import { Checkbox } from "@mui/material";
 
-const CardForm = ({ category_id }) => {
+const CardForm = ({ category_id, addNew, setAddNew }) => {
 	const { user } = useAuthContext();
 	const { dispatch } = useCardContext();
 	const { resetToken } = useToken();
@@ -58,41 +60,50 @@ const CardForm = ({ category_id }) => {
 			setIsMultipleChoice(false);
 			setError(null);
 			setEmptyFields([]);
+			setAddNew(false);
 			dispatch({ type: "CREATE_CARD", payload: json });
 		}
 	};
 
 	return (
-		<form className="create" onSubmit={handleSubmit}>
-			<label>Question:</label>
-			<input
-				type="text"
-				onChange={(e) => setQuestion(e.target.value)}
-				value={question}
-				className={emptyFields.includes("question") ? "error" : ""}
-			/>
-
-			<label>Answer:</label>
-			<input
-				type="text"
-				onChange={(e) => setAnswer(e.target.value)}
-				value={answer}
-				className={emptyFields.includes("answer") ? "error" : ""}
-			/>
-
-			<div className="checkbox-wrapper">
+		<Modal open={addNew} onClose={() => setAddNew(false)}>
+			<form className="card-form" onSubmit={handleSubmit}>
+				<h3>Create New Card</h3>
+				<label>Question:</label>
 				<input
-					type="checkbox"
-					value={isMultipleChoice}
-					checked={isMultipleChoice}
-					onChange={(e) => setIsMultipleChoice((prev) => !prev)}
+					type="text"
+					onChange={(e) => setQuestion(e.target.value)}
+					value={question}
+					className={emptyFields.includes("question") ? "error" : ""}
 				/>
-				<label>Multiple Choice</label>
-			</div>
 
-			<button>Add Card</button>
-			{error && <div className="error">{error}</div>}
-		</form>
+				<label>Answer:</label>
+				<input
+					type="text"
+					onChange={(e) => setAnswer(e.target.value)}
+					value={answer}
+					className={emptyFields.includes("answer") ? "error" : ""}
+				/>
+
+				<FormControlLabel
+					control={
+						<Checkbox
+							size="large"
+							value={isMultipleChoice}
+							checked={isMultipleChoice}
+							onChange={(e) =>
+								setIsMultipleChoice((prev) => !prev)
+							}
+						/>
+					}
+					label="Multiple Choice"
+				/>
+
+				<br />
+				<button>Add Card</button>
+				{error && <div className="error">{error}</div>}
+			</form>
+		</Modal>
 	);
 };
 

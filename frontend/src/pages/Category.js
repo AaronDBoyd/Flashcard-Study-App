@@ -11,6 +11,8 @@ import CardForm from "../components/CardForm";
 import DeleteModal from "../components/DeleteModal";
 import PaginatedCards from "../components/PaginatedCards";
 import TestCategoryDropdown from "../components/TestCategoryDropdown";
+import { IconButton, Tooltip } from "@mui/material";
+import { AddCircle } from "@mui/icons-material";
 
 const Category = () => {
 	// context
@@ -24,6 +26,7 @@ const Category = () => {
 	const [color, setColor] = useState("");
 	const [editCategory, setEditCategory] = useState(false);
 	const [passedCardCount, setPassedCardCount] = useState(0);
+	const [addNew, setAddNew] = useState(false);
 
 	const navigate = useNavigate();
 
@@ -96,55 +99,88 @@ const Category = () => {
 	};
 
 	return (
-		<div style={{color: 'whitesmoke'}}>
-			<h2>
-				{category && (
-					<span style={{ color: `${category.color}` }}>
-						{category.title}
-					</span>
-				)}{" "}
-				Flash Cards
-			</h2>
-			{cards && (
-				<h3>
-					Passed: {passedCardCount} of {cards.length}
-				</h3>
-			)}
-
-			{user && category && user.email === category.created_by_email && (
-				<button
-					className="delete-button"
-					onClick={() => setConfirm(true)}
+		<div style={{ color: "whitesmoke" }}>
+			<div style={{ display: "flex", justifyContent: "space-around", height: '100px' }}>
+				<h2>
+					{category && (
+						<span style={{ color: `${category.color}` }}>
+							{category.title}
+						</span>
+					)}{" "}
+					Flash Cards
+				</h2>
+				<IconButton
+					className="new-cat-button"
+					onClick={() => setAddNew(true)}
 				>
-					Delete Category{" "}
-				</button>
-			)}
+					<Tooltip
+						title={
+							user ? (
+								<h6>CREATE CARD</h6>
+							) : (
+								<h6>LOGIN TO CREATE CARD</h6>
+							)
+						}
+						placement="top"
+					>
+						<AddCircle
+							sx={{
+								width: 60,
+								height: 60,
+								marginTop: "-40px",
+								color: "#841e62",
+							}}
+						/>
+					</Tooltip>
+				</IconButton>
+				{cards && (
+					<h2>
+						Passed: {passedCardCount} of {cards.length}
+					</h2>
+				)}
+			</div>
 
-			{user && category && user.email === category.created_by_email && (
-				<button
-					className="edit-button"
-					onClick={() => setEditCategory(true)}
-				>
-					Edit Category
-				</button>
-			)}
+			<div style={{ display: 'flex', marginLeft: '20px'}}>
+				{user &&
+					category &&
+					user.email === category.created_by_email && (
+						<button
+							className="delete-button"
+							onClick={() => setConfirm(true)}
+						>
+							Delete Category{" "}
+						</button>
+					)}
 
-			{cards && (
-				<TestCategoryDropdown
-					category={category}
-					passedCardCount={passedCardCount}
-				/>
-			)}
+				{user &&
+					category &&
+					user.email === category.created_by_email && (
+						<button
+							className="edit-button"
+							onClick={() => setEditCategory(true)}
+						>
+							Edit Category
+						</button>
+					)}
+
+				{cards && (
+					<TestCategoryDropdown
+						category={category}
+						passedCardCount={passedCardCount}
+					/>
+				)}
+			</div>
 
 			<div
 				style={{
-					display: "grid",
-					gridTemplateColumns: "5fr 3fr",
-					gap: "100px",
+					
 				}}
 			>
 				<PaginatedCards color={color} />
-				<CardForm category_id={category_id} />
+
+				{user && addNew && 
+				<CardForm category_id={category_id} addNew={addNew} setAddNew={setAddNew} />
+				}
 			</div>
 
 			{/* Edit Form Modal */}

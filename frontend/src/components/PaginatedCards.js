@@ -20,22 +20,39 @@ const PaginatedCards = ({ color }) => {
 	};
 
 	return (
-		<div className="cards">
-			{cards &&
-				_DATA
-					.currentData()
-					.map((card) => (
-						<CardDetails key={card._id} card={card} color={color} />
-					))}
-			{!cards && <h3>Use form to add flash cards to this category.</h3>}
-			<Pagination
-				count={count}
-				page={page}
-				variant="outlined"
-				color="secondary"
-				onChange={handleChangePage}
-			/>
-		</div>
+		<>
+			<div className="cards">
+				{cards &&
+					_DATA
+						.currentData()
+						.map((card) => (
+							<CardDetails
+								key={card._id}
+								card={card}
+								color={color}
+							/>
+						))}
+				{!cards && (
+					<h3>Use form to add flash cards to this category.</h3>
+				)}
+			</div>
+
+			<div className="cards-pagination">
+				<Pagination
+					count={count}
+					page={page}
+					sx={{
+						"& .MuiPaginationItem-root": {
+							color: "#fff",
+						},
+						"& .Mui-selected": {
+							background: "#841e62",
+						},
+					}}
+					onChange={handleChangePage}
+				/>
+			</div>
+		</>
 	);
 };
 
