@@ -88,14 +88,16 @@ const Category = () => {
 		);
 
 		if (response.ok) {
-			// reduce existing cards in this category to _ids array
-			const cardIds = cards.map((c) => c._id);
-			// remove cards from user's passedCardIds array
-			user.passedCardIds = user.passedCardIds.filter(
-				(c) => !cardIds.includes(c)
-			);
-			// save the user to local storage
-			localStorage.setItem("user", JSON.stringify(user));
+			if (cards) {
+				// reduce existing cards in this category to _ids array
+				const cardIds = cards.map((c) => c._id);
+				// remove cards from user's passedCardIds array
+				user.passedCardIds = user.passedCardIds.filter(
+					(c) => !cardIds.includes(c)
+				);
+				// save the user to local storage
+				localStorage.setItem("user", JSON.stringify(user));
+			}
 
 			await categoryDispatch({ type: "SET_CATEGORIES", payload: null });
 			navigate("/");
@@ -104,7 +106,13 @@ const Category = () => {
 
 	return (
 		<div style={{ color: "whitesmoke" }}>
-			<div style={{ display: "flex", justifyContent: "space-around", height: '100px' }}>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "space-around",
+					height: "100px",
+				}}
+			>
 				<h2>
 					{category && (
 						<span style={{ color: `${category.color}` }}>
@@ -132,7 +140,7 @@ const Category = () => {
 								width: 60,
 								height: 60,
 								marginTop: "-40px",
-								marginRight: '40px',
+								marginRight: "40px",
 								color: "#841e62",
 							}}
 						/>
@@ -145,7 +153,7 @@ const Category = () => {
 				)}
 			</div>
 
-			<div style={{ display: 'flex', justifyContent: 'center'}}>
+			<div style={{ display: "flex", justifyContent: "center" }}>
 				{user &&
 					category &&
 					user.email === category.created_by_email && (
@@ -176,16 +184,16 @@ const Category = () => {
 				)}
 			</div>
 
-			<div
-				style={{
-					
-				}}
-			>
+			<div style={{}}>
 				<PaginatedCards color={color} />
 
-				{user && addNew && 
-				<CardForm category_id={category_id} addNew={addNew} setAddNew={setAddNew} />
-				}
+				{user && addNew && (
+					<CardForm
+						category_id={category_id}
+						addNew={addNew}
+						setAddNew={setAddNew}
+					/>
+				)}
 			</div>
 
 			{/* Edit Form Modal */}
